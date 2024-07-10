@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using PRN231_FinalProject_API.Models;
+
 namespace PRN231_FinalProject_API
 {
     public class Program
@@ -14,7 +17,7 @@ namespace PRN231_FinalProject_API
             builder.Services.AddSwaggerGen();
 
             var connectionString = builder.Configuration.GetConnectionString("DB");
-            //builder.Services.AddDbContext<PRN221_ProjectContext>(options => { options.UseSqlServer(connectionString); });
+            builder.Services.AddDbContext<PRN221_ProjectContext>(options => { options.UseSqlServer(connectionString); });
 
 
             var app = builder.Build();
