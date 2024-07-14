@@ -55,7 +55,7 @@ namespace PRN231_FinalProject_API.Controllers
             {
                 return NotFound();
             }
-            var user = await _context.Users.Where(u => u.Username.Equals(UserName) && Password.Equals(Password)).SingleOrDefaultAsync();
+            var user = await _context.Users.Where(u => u.Username.Equals(UserName) && Password.Equals(Password)).FirstOrDefaultAsync();
 
             if (user == null)
             {
