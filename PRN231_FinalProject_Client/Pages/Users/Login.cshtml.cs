@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PRN231_FinalProject_Client.Models;
+using PRN231_FinalProject_API.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
