@@ -1,0 +1,50 @@
+﻿@page
+@model PRN231_FinalProject_Client.Pages.Debts.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>DebtsLoan</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DebtsLoan.Type)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DebtsLoan.Type)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DebtsLoan.Amount)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DebtsLoan.Amount)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DebtsLoan.InterestRate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DebtsLoan.InterestRate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DebtsLoan.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DebtsLoan.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DebtsLoan.User)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DebtsLoan.User.UserId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.DebtsLoan.DebtLoanId">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

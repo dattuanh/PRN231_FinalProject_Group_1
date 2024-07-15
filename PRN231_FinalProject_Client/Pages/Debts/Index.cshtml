@@ -1,0 +1,84 @@
+﻿@page
+@model PRN231_FinalProject_Client.Pages.Debts.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    var countID = 0;
+}
+
+<h1>Debts and Loans Management</h1>
+
+<p>
+    <button><a asp-page="Create">Create New</a></button>
+</p>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Debts Management</h3>
+                <div class="card-tools">
+                    <div class="input-group input-group-sm" style="width: 150px;">
+                        <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-default">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body table-responsive p-0" style="height: 300px;">
+                <table class="table table-head-fixed text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>InterestRate</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.DebtsLoan)
+                        {
+                            countID++;
+                            <tr>
+                                <td>
+                                    @countID
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Type)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Amount)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.InterestRate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+                                <td>
+                                    <a asp-page="./Edit" asp-route-id="@item.DebtLoanId">
+                                        <button class="btn btn-primary">Edit</button>
+                                    </a>|
+                                    <a asp-page="./Details" asp-route-id="@item.DebtLoanId">
+                                        <button class="btn badge-warning">Details</button>
+                                    </a> |
+                                    <a asp-page="./Delete" asp-route-id="@item.DebtLoanId">
+                                        <button class="btn btn-danger">Delete</button>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+</div>

@@ -21,7 +21,6 @@ namespace PRN231_FinalProject_API.Controllers
             _context = context;
         }
 
-        // GET: api/Debts
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DebtsLoan>>> GetDebtsLoans()
         {
@@ -32,7 +31,6 @@ namespace PRN231_FinalProject_API.Controllers
             return await _context.DebtsLoans.ToListAsync();
         }
 
-        // GET: api/Debts/5
         [HttpGet("{id}")]
         public async Task<ActionResult<DebtsLoan>> GetDebtsLoan(int id)
         {
@@ -89,8 +87,6 @@ namespace PRN231_FinalProject_API.Controllers
             return NoContent();
         }
 
-        // PUT: api/Debts/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDebtsLoan(int id, DebtsLoan debtsLoan)
         {
@@ -120,8 +116,6 @@ namespace PRN231_FinalProject_API.Controllers
             return NoContent();
         }
 
-        // POST: api/Debts
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<DebtsLoan>> PostDebtsLoan(DebtsDTO dto)
         {
@@ -145,7 +139,6 @@ namespace PRN231_FinalProject_API.Controllers
             return CreatedAtAction("GetDebtsLoan", new { id = debtsLoan.DebtLoanId }, debtsLoan);
         }
 
-        // DELETE: api/Debts/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDebtsLoan(int id)
         {
