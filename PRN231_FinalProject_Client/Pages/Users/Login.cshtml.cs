@@ -50,7 +50,7 @@ namespace PRN231_FinalProject_Client.Pages.Users
                 //var userId = HttpContext.Session.GetInt32("UserId");
                 var today = DateTime.Now;
                 var endOfToday = today.AddHours(24);
-                response = await client.GetAsync($"https://localhost:7203/api/PaymentReminders/GetPaymentRemindersByTimeAndUserId/{user.UserId}?today={today}&endOfDate={endOfToday}");
+                response = await client.GetAsync($"https://localhost:7203/api/PaymentReminders/GetPaymentRemindersByTimeAndUserId/{user.UserId}?today={today.ToString("MM-dd-yyyy HH:mm:ss")}&endOfDate={endOfToday.ToString("MM-dd-yyyy HH:mm:ss")}");
                 strData = await response.Content.ReadAsStringAsync();
                 var reminders = JsonSerializer.Deserialize<List<PaymentReminder>>(strData, options);
                 //var reminders = _context.PaymentReminders
