@@ -11,6 +11,7 @@
     "PRN231_FinalProject_Client": {
       "commandName": "Project",
       "dotnetRunMessages": true,
+      "launchUrl": "User/Login",
       "launchBrowser": true,
       "applicationUrl": "https://localhost:7192;http://localhost:5000",
       "environmentVariables": {

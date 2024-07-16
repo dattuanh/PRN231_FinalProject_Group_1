@@ -24,10 +24,10 @@ namespace PRN231_FinalProject_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
             return await _context.Users.ToListAsync();
         }
 
@@ -35,10 +35,10 @@ namespace PRN231_FinalProject_API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
             var user = await _context.Users.FindAsync(id);
 
             if (user == null)
@@ -48,7 +48,22 @@ namespace PRN231_FinalProject_API.Controllers
 
             return user;
         }
+        [HttpGet("{UserName}/{Password}")]
+        public async Task<ActionResult<User>> GetUserByUserNameAndPassWord(string UserName, string Password)
+        {
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
+            var user = await _context.Users.Where(u => u.Username.Equals(UserName) && Password.Equals(Password)).FirstOrDefaultAsync();
 
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return user;
+        }
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -85,10 +100,10 @@ namespace PRN231_FinalProject_API.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
-          if (_context.Users == null)
-          {
-              return Problem("Entity set 'PRN221_ProjectContext.Users'  is null.");
-          }
+            if (_context.Users == null)
+            {
+                return Problem("Entity set 'PRN221_ProjectContext.Users'  is null.");
+            }
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 

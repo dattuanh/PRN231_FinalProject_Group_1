@@ -5,7 +5,7 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PRN231_FinalProject_API", "PRN231_FinalProject_API\PRN231_FinalProject_API.csproj", "{1A05E271-3997-4F8E-A3B5-05F2E90AB4E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRN231_FinalProject_Client", "PRN231_FinalProject_Client\PRN231_FinalProject_Client.csproj", "{88256B3C-C9F1-4EA6-9520-DD4472CA3DD3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PRN231_FinalProject_Client", "PRN231_FinalProject_Client\PRN231_FinalProject_Client.csproj", "{88256B3C-C9F1-4EA6-9520-DD4472CA3DD3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

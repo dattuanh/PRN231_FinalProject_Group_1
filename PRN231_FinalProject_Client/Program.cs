@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
+
 namespace PRN231_FinalProject_Client
 {
     public class Program
@@ -5,10 +8,28 @@ namespace PRN231_FinalProject_Client
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
             // Add services to the container.
-            builder.Services.AddRazorPages();
+            builder.Services.AddResponseCaching();
+            builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
+            {
+                options.Conventions.AddPageApplicationModelConvention("/Pages/Users/Login", model =>
+                {
+                    model.Filters.Add(new ResponseCacheAttribute
+                    {
+                        Duration = 60,
+                        Location = ResponseCacheLocation.Client,
+                        NoStore = false
+                    });
+                });
+                //options.Conventions.AddPageRoute("/Users/Login", "/user/login123");
+                //options.Conventions.AddPageRoute("/Users/Login", "/user/login1234");
+                //options.Conventions.AddPageRoute("/Users/Login", "/user/login1234");
+            });
 
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+            });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -21,13 +42,15 @@ namespace PRN231_FinalProject_Client
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
+            app.UseRequestLocalization(options =>
+            {
+                options.DefaultRequestCulture = new RequestCulture("vi-VN");
+            });
+            app.UseResponseCaching();
+            app.UseSession();
             app.MapRazorPages();
-
             app.Run();
         }
     }

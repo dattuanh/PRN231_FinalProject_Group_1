@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PRN231_FinalProject_API.DTOs.Debts;
 using PRN231_FinalProject_API.Models;
 
 namespace PRN231_FinalProject_API.Controllers
@@ -49,6 +50,45 @@ namespace PRN231_FinalProject_API.Controllers
             return debtsLoan;
         }
 
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchDebts(int id, [FromBody] DebtsLoan debtsLoan)
+        {
+            if (debtsLoan == null)
+            {
+                return BadRequest();
+            }
+
+            var existingDebts = await _context.DebtsLoans.FindAsync(id);
+            if (existingDebts == null)
+            {
+                return NotFound();
+            }
+
+            existingDebts.UserId = debtsLoan.UserId;
+            existingDebts.Type = debtsLoan.Type;
+            existingDebts.Amount = debtsLoan.Amount;
+            existingDebts.InterestRate = debtsLoan.InterestRate;
+            existingDebts.Description = debtsLoan.Description;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!DebtsLoanExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
         // PUT: api/Debts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -83,12 +123,22 @@ namespace PRN231_FinalProject_API.Controllers
         // POST: api/Debts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<DebtsLoan>> PostDebtsLoan(DebtsLoan debtsLoan)
+        public async Task<ActionResult<DebtsLoan>> PostDebtsLoan(DebtsDTO dto)
         {
           if (_context.DebtsLoans == null)
           {
               return Problem("Entity set 'PRN221_ProjectContext.DebtsLoans'  is null.");
           }
+
+            DebtsLoan debtsLoan = new DebtsLoan
+            {
+                UserId = dto.UserId,
+                Type = dto.Type,
+                Amount = dto.Amount,
+                InterestRate = dto.InterestRate,
+                Description = dto.Description
+            };
+
             _context.DebtsLoans.Add(debtsLoan);
             await _context.SaveChangesAsync();
 
