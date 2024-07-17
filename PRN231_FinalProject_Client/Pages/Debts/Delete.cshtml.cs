@@ -1,59 +1,114 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PRN231_FinalProject_Client.Models;
 
 namespace PRN231_FinalProject_Client.Pages.Debts
 {
     public class DeleteModel : PageModel
     {
-        //private readonly PRN231_FinalProject_Client.Models.PRN221_ProjectContext _context;
+        private readonly HttpClient client = null;
+        private string ReportApiUrl = "";
 
-        //public DeleteModel(PRN231_FinalProject_Client.Models.PRN221_ProjectContext context)
-        //{
-        //    _context = context;
-        //}
+        public DeleteModel(ILogger<IndexModel> logger)
+        {
+            this.client = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            client.DefaultRequestHeaders.Accept.Add(contentType);
+            ReportApiUrl = "https://localhost:7203/api/Debts";
+        }
 
         [BindProperty]
         public DebtsLoan DebtsLoan { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-            //DebtsLoan = await _context.DebtsLoans
-            //    .Include(d => d.User).FirstOrDefaultAsync(m => m.DebtLoanId == id);
+            try
+            {
+                var httpClient = new HttpClient();
+                var response = await httpClient.GetAsync($"{ReportApiUrl}/{id}");
 
-            //if (DebtsLoan == null)
-            //{
-            //    return NotFound();
-            //}
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var debts = JsonConvert.DeserializeObject<DebtsLoan>(content);
+
+                    if (debts == null)
+                    {
+                        return NotFound();
+                    }
+
+                    DebtsLoan = debts;
+                }
+                else
+                {
+                    return new ContentResult
+                    {
+                        Content = $"Failed to retrieve details for editing. Status code: {response.StatusCode}",
+                        ContentType = "text/plain",
+                        StatusCode = (int)response.StatusCode
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ContentResult
+                {
+                    Content = $"An error occurred while fetching details for editing: {ex.Message}",
+                    ContentType = "text/plain",
+                    StatusCode = 500
+                };
+            }
+
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            //if (id == null)
-            //{
-            //    return NotFound();
-            //}
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-            //DebtsLoan = await _context.DebtsLoans.FindAsync(id);
+            try
+            {
+                var httpClient = new HttpClient();
+                var response = await httpClient.DeleteAsync($"{ReportApiUrl}/{id}");
 
-            //if (DebtsLoan != null)
-            //{
-            //    _context.DebtsLoans.Remove(DebtsLoan);
-            //    await _context.SaveChangesAsync();
-            //}
-
-            return RedirectToPage("./Index");
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToPage("./Index");
+                }
+                else
+                {
+                    return new ContentResult
+                    {
+                        Content = $"Failed to delete staff. Status code: {response.StatusCode}",
+                        ContentType = "text/plain",
+                        StatusCode = (int)response.StatusCode
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ContentResult
+                {
+                    Content = $"An error occurred while deleting staff: {ex.Message}",
+                    ContentType = "text/plain",
+                    StatusCode = 500
+                };
+            }
         }
     }
 }

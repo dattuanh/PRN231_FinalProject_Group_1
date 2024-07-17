@@ -1,42 +1,62 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using PRN231_FinalProject_Client.Models;
 
 namespace PRN231_FinalProject_Client.Pages.Debts
 {
     public class CreateModel : PageModel
     {
-        private readonly PRN231_FinalProject_Client.Models.PRN221_ProjectContext _context;
+        private readonly HttpClient client = null;
+        private string ReportApiUrl = "";
 
-        public CreateModel(PRN231_FinalProject_Client.Models.PRN221_ProjectContext context)
+        public CreateModel(ILogger<IndexModel> logger)
         {
-            _context = context;
+            this.client = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            client.DefaultRequestHeaders.Accept.Add(contentType);
+            ReportApiUrl = "https://localhost:7203/api/Debts";
         }
 
         public IActionResult OnGet()
         {
-        ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId");
+            //ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId");
             return Page();
         }
 
         [BindProperty]
         public DebtsLoan DebtsLoan { get; set; }
 
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            var userId = HttpContext.Session.GetInt32("UserId");
+            DebtsLoan.UserId = userId;
+            DebtsLoan.Type = ...;
+            if (ModelState.IsValid)
             {
-                return Page();
-            }
+                var json = JsonConvert.SerializeObject(DebtsLoan);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            _context.DebtsLoans.Add(DebtsLoan);
-            await _context.SaveChangesAsync();
+                var response = await client.PostAsync(ReportApiUrl, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToPage("./Index");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+                    return Page();
+                }
+            }
 
             return RedirectToPage("./Index");
         }
