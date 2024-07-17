@@ -1,0 +1,61 @@
+﻿@page
+@model PRN231_FinalProject_Client.Pages.Expenses.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Expenses[0].ExpenseDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Expenses[0].Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Expenses[0].Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Expenses[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Expenses[0].User)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Expenses) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExpenseDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.UserId)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.ExpenseId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.ExpenseId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.ExpenseId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
