@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PRN231_FinalProject_API.Models;
 
 namespace PRN231_FinalProject_API.Controllers
@@ -14,10 +18,12 @@ namespace PRN231_FinalProject_API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly PRN221_ProjectContext _context;
+        private readonly IConfiguration _configuration;
 
-        public UsersController(PRN221_ProjectContext context)
+        public UsersController(PRN221_ProjectContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         // GET: api/Users
@@ -48,8 +54,33 @@ namespace PRN231_FinalProject_API.Controllers
 
             return user;
         }
+        private string GenerateToken(User user)
+        {
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
+            var ExpiryInDays = Convert.ToInt32(_configuration["Jwt:ExpiryInDays"]);
+            var Issuer = _configuration["Jwt:Issuer"];
+            var Audience = _configuration["Jwt:Audience"];
+            var secretKey = _configuration["Jwt:Key"];
+            var secretKeyByte = Encoding.UTF8.GetBytes(secretKey);
+            var tokenDescription = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim("Username", user.Username),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim("Id", user.UserId.ToString()),
+                    new Claim("TokenId", Guid.NewGuid().ToString()),
+                }),
+                Expires = DateTime.UtcNow.AddDays(ExpiryInDays),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyByte), SecurityAlgorithms.HmacSha512Signature),
+                Issuer = Issuer,
+                Audience = Audience,
+            };
+            var token = jwtTokenHandler.CreateToken(tokenDescription);
+            return jwtTokenHandler.WriteToken(token);
+        }
         [HttpGet("{UserName}/{Password}")]
-        public async Task<ActionResult<User>> GetUserByUserNameAndPassWord(string UserName, string Password)
+        public async Task<IActionResult> GetUserByUserNameAndPassWord(string UserName, string Password)
         {
             if (_context.Users == null)
             {
@@ -62,7 +93,13 @@ namespace PRN231_FinalProject_API.Controllers
                 return NotFound();
             }
 
-            return user;
+            return Ok(new
+            {
+                User = user,
+                Message = "Thành Công Đăng Nhập!",
+                IsSuccess = true,
+                Data = GenerateToken(user)
+            });
         }
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
