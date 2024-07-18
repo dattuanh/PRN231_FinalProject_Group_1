@@ -20,7 +20,7 @@ namespace PRN231_FinalProject_Client.Pages.Expenses
         private readonly PRN221_ProjectContext _context;
         private readonly ILogger<IndexModel> _logger;
         private readonly IMemoryCache _cache;
-        private readonly string cachingKey = "IncomesKey";
+        private readonly string cachingKey = "ExpenseKey";
         public IndexModel(IMemoryCache cache, ILogger<IndexModel> logger)
         {
             client = new HttpClient();

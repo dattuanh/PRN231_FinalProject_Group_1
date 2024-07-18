@@ -1,59 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using PRN231_FinalProject_Client.Models;
 
 namespace PRN231_FinalProject_Client.Pages.Expenses
 {
+    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Client, NoStore = false)]
     public class DeleteModel : PageModel
     {
+        private readonly HttpClient client = null;
+        private string ApiUrl = "https://localhost:7203";
         private readonly PRN221_ProjectContext _context;
-
-        public DeleteModel(PRN221_ProjectContext context)
+        private readonly ILogger<IndexModel> _logger;
+        private readonly IMemoryCache _cache;
+        private readonly string cachingKey = "ExpenseKey";
+        public DeleteModel(IMemoryCache cache, ILogger<IndexModel> logger)
         {
-            _context = context;
+            client = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            client.DefaultRequestHeaders.Accept.Add(contentType);
+            _cache = cache;
+            _logger = logger;
         }
 
         [BindProperty]
         public Expense Expense { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task OnGetAsync(int? id)
         {
-            if (id == null || _context.Expenses == null)
+            var response = await client.GetAsync(ApiUrl + "/api/Users/1");
+            var options = new JsonSerializerOptions
             {
-                return NotFound();
-            }
+                PropertyNameCaseInsensitive = true,
+            };
+            var currentUser = await JsonSerializer.DeserializeAsync<User>(await response.Content.ReadAsStreamAsync(), options);
 
-            var expense = await _context.Expenses.FirstOrDefaultAsync(m => m.ExpenseId == id);
+            response = await client.GetAsync(ApiUrl + "/api/Expenses/" + id);
+            string strData = await response.Content.ReadAsStringAsync();
+            var expense = JsonSerializer.Deserialize<Expense>(strData, options);
 
-            if (expense == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                Expense = expense;
-            }
-            return Page();
+            Expense = expense;
         }
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (id == null || _context.Expenses == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return Page();
             }
-            var expense = await _context.Expenses.FindAsync(id);
 
-            if (expense != null)
+            try
             {
-                Expense = expense;
-                _context.Expenses.Remove(Expense);
-                await _context.SaveChangesAsync();
+                String tempUrl = ApiUrl + "/api/Expenses";
+                var response = await client.DeleteAsync($"{tempUrl}/{id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToPage("./Index");
+                }
+                else
+                {
+                    Console.WriteLine(response.StatusCode.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
             }
             return RedirectToPage("./Index");
         }

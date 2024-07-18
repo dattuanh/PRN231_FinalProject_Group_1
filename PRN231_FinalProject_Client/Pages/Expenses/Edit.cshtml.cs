@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.ConstrainedExecution;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using PRN231_FinalProject_Client.Models;
 
@@ -14,41 +19,37 @@ namespace PRN231_FinalProject_Client.Pages.Expenses
 {
     public class EditModel : PageModel
     {
+        private readonly HttpClient client = null;
+        private string ApiUrl = "https://localhost:7203/api/Expenses";
         private readonly PRN221_ProjectContext _context;
+        private readonly ILogger<IndexModel> _logger;
+        private readonly IMemoryCache _cache;
+        private readonly string cachingKey = "ExpenseKey";
 
-        public EditModel(PRN221_ProjectContext context)
+        public EditModel(IMemoryCache cache, ILogger<IndexModel> logger)
         {
-            _context = context;
+            client = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            client.DefaultRequestHeaders.Accept.Add(contentType);
+            _cache = cache;
+            _logger = logger;
         }
+
 
         [BindProperty]
         public Expense Expense { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task OnGetAsync(int? id)
         {
-            if (id == null || _context.Expenses == null)
+            var options = new JsonSerializerOptions
             {
-                return NotFound();
-            }
-            using (var httpClient = new HttpClient())
-            {
-                using (HttpResponseMessage response = await httpClient.GetAsync("https://localhost:7203/api/Expenses/"+id))
-                {
-                    string apiResponse = await response.Content.ReadAsStringAsync();
-                    Expense = JsonConvert.DeserializeObject<Expense>(apiResponse);
-                }
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId");
-            return Page();
-            //var expense = await _context.Expenses.FirstOrDefaultAsync(m => m.ExpenseId == id);
-            //if (expense == null)
-            //{
-            //    return NotFound();
-            //}
-            //Expense = expense;
-            
-            
+                PropertyNameCaseInsensitive = true,
+            };
+            var response = await client.GetAsync($"{ApiUrl}/{id}");
+            string strData = await response.Content.ReadAsStringAsync();
+            var expense = System.Text.Json.JsonSerializer.Deserialize<Expense>(strData, options);
 
+            Expense = expense;
         }
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -59,31 +60,26 @@ namespace PRN231_FinalProject_Client.Pages.Expenses
             {
                 return Page();
             }
-
-            _context.Attach(Expense).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ExpenseExists(Expense.ExpenseId))
+                var json = JsonConvert.SerializeObject(Expense);
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+                var response = await client.PutAsync($"{ApiUrl}/{Expense.ExpenseId}", content);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    return NotFound();
+                    return RedirectToPage("./Index");
                 }
                 else
                 {
-                    throw;
+                    Console.WriteLine(response.StatusCode.ToString());
                 }
             }
-
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
             return RedirectToPage("./Index");
-        }
-
-        private bool ExpenseExists(int id)
-        {
-            return (_context.Expenses?.Any(e => e.ExpenseId == id)).GetValueOrDefault();
         }
     }
 }
