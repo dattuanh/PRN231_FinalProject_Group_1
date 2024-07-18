@@ -1,0 +1,174 @@
+﻿@page
+@model PRN231_FinalProject_Client.Pages.Financial.IndexModel
+@{
+}
+<style>
+    .clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+</style>
+<div class="row">
+    <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-white clearfix">
+            <div class="inner">
+                <h3>Budget</h3>
+                <div class="bg-white" style="width: 50%; float: left;">
+                    <p>Current Budget</p>
+                    <p>@Model.Budget.ToString("C", new System.Globalization.CultureInfo(Model.culture))</p>
+                    <p>Expense</p>
+                    <p>@Model.TotalExpense.ToString("C", new System.Globalization.CultureInfo(Model.culture))</p>
+                </div>
+                <div class="bg-white" style="width: 50%; float: right;">
+                    <canvas id="expenseProgressBar"></canvas>
+                </div>
+            </div>
+
+        </div>
+        
+    </div>
+</div>
+
+<div height="400">
+    <div style="width: 50%; float: left;">
+        <h2>Expenses by Category</h2>
+        <canvas id="expenseChart"></canvas>
+    </div>
+
+    <div style="width: 50%; float: right;">
+        <h2>Income and Expenses Over Time</h2>
+        <canvas id="incomeExpenseChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Semi-circular progress bar for Total Expense/Budget
+            var progressBarCtx = document.getElementById('expenseProgressBar').getContext('2d');
+            var expenseRatio = @Model.TotalExpense / @Model.Budget;
+            var progressBar = new Chart(progressBarCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Expense', 'Remaining'],
+                    datasets: [{
+                        data: [expenseRatio, 1 - expenseRatio],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.1)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    circumference: Math.PI,
+                    rotation: Math.PI,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Expenses by Category
+            var expenseCtx = document.getElementById('expenseChart').getContext('2d');
+            var expenseChart = new Chart(expenseCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.Categories)),
+                    datasets: [{
+                        label: 'Expenses by Category',
+                        data: @Html.Raw(Json.Serialize(Model.ExpenseAmounts)),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Expenses by Category'
+                        }
+                    }
+                }
+            });
+
+            // Income and Expenses Over Time
+            var incomeExpenseCtx = document.getElementById('incomeExpenseChart').getContext('2d');
+            var incomeExpenseChart = new Chart(incomeExpenseCtx, {
+                type: 'line',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(Model.Dates)),
+                    datasets: [{
+                        label: 'Income',
+                        data: @Html.Raw(Json.Serialize(Model.IncomeAmounts)),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: true
+                    }, {
+                        label: 'Expenses',
+                        data: @Html.Raw(Json.Serialize(Model.ExpenseAmountsOverTime)),
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Income and Expenses Over Time'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Amount'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

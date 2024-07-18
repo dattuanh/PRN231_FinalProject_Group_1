@@ -48,9 +48,23 @@ namespace PRN231_FinalProject_API.Controllers
 
             return income;
         }
+        [HttpGet("User/{uid}")]
+        public async Task<ActionResult<IEnumerable<Income>>> GetUserIncome(int uid)
+        {
+          if (_context.Incomes == null)
+          {
+              return NotFound();
+          }
+            var income = await _context.Incomes.Where(i=>i.UserId==uid).ToListAsync();
 
-        // PUT: api/Incomes/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+            if (income == null)
+            {
+                return NotFound();
+            }
+
+            return income;
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutIncome(int id, Income income)
         {

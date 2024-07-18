@@ -23,7 +23,7 @@ namespace PRN231_FinalProject_Client.Models
         public string Username { get; set; } = null!;
         public string Password { get; set; } = null!;
         public string Email { get; set; } = null!;
-        public decimal? Balance { get; set; }
+        public decimal Balance { get; set; }
 
         public virtual ICollection<AutomatedTransaction> AutomatedTransactions { get; set; }
         public virtual ICollection<Budget> Budgets { get; set; }

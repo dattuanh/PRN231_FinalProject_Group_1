@@ -10,10 +10,10 @@
 <h4>Income</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
+
             <div class="form-group">
                 <label asp-for="Income.IncomeDate" class="control-label"></label>
                 <input asp-for="Income.IncomeDate" class="form-control" />
@@ -27,12 +27,13 @@
             <div class="form-group">
                 <label asp-for="Income.Source" class="control-label"></label>
                 <select asp-for="Income.Source" class="form-control">
-                    <option value="">Select Category</option>
+                    <option value="">Select Source</option>
                     @foreach (var source in Model.Sources)
                     {
                         <option value="@source">@source</option>
                     }
                 </select>
+                <span asp-validation-for="Income.Source" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Income.Description" class="control-label"></label>
@@ -47,9 +48,11 @@
 </div>
 
 <div>
-    <a asp-page="Index">Back to List</a>
+    <a asp-page="Index" class="btn btn-secondary">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

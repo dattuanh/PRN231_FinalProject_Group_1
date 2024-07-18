@@ -5,56 +5,72 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Incomes</h1>
 
 <p>
-    <a asp-page="Create">Create New</a>
+    <a class="btn btn-primary" asp-page="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Income[0].IncomeDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Income[0].Amount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Income[0].Source)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Income[0].Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Income[0].User)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Income) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IncomeDate)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.Amount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Source)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.UserId)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.IncomeId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.IncomeId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.IncomeId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Entry</h3>
+        <div class="card-tools">
+            <div class="input-group input-group-sm" style="width: 150px;">
+                <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-default">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body table-responsive p-0" style="height: 300px;">
+        <table class="table table-head-fixed text-nowrap">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Income[0].IncomeDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Income[0].Amount)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Income[0].Source)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Income[0].Description)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Income)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IncomeDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Amount)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Source)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            <a class="btn btn-primary" asp-page="./Edit" asp-route-id="@item.IncomeId">Edit</a> |
+                            <a class="btn btn-warning" asp-page="./Details" asp-route-id="@item.IncomeId">Details</a> |
+                            <a class="btn btn-danger" asp-page="./Delete" asp-route-id="@item.IncomeId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+

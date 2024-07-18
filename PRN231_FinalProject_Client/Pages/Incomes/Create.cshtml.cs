@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using PRN231_FinalProject_API.Models;
+using PRN231_FinalProject_Client.Models;
 
 namespace PRN231_FinalProject_Client.Pages.Incomes
 {
@@ -48,7 +48,7 @@ namespace PRN231_FinalProject_Client.Pages.Incomes
                 return Page();
             }
             //var currentUser = _context.Users.FirstOrDefault(u => u.Username == HttpContext.Session.GetString("Username"));
-            var response = await client.GetAsync(ApiUrl + "/api/Users");
+            var response = await client.GetAsync(ApiUrl + $"/api/Users/{HttpContext.Session.GetInt32("UserId")}");
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
@@ -56,7 +56,7 @@ namespace PRN231_FinalProject_Client.Pages.Incomes
             var currentUser = await JsonSerializer.DeserializeAsync<User>(await response.Content.ReadAsStreamAsync(), options);
             Income.UserId = currentUser.UserId;
             currentUser.Balance = currentUser.Balance + Income.Amount;
-            var json = JsonSerializer.Serialize(currentUser);
+            var json = JsonSerializer.Serialize(Income);
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             response = await client.PostAsync(ApiUrl + "/api/Incomes/", content);
             if (response.IsSuccessStatusCode)

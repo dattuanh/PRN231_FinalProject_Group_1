@@ -24,7 +24,7 @@ namespace PRN231_FinalProject_API.Models
         public string Username { get; set; } = null!;
         public string Password { get; set; } = null!;
         public string Email { get; set; } = null!;
-        public decimal? Balance { get; set; }
+        public decimal Balance { get; set; }
         [JsonIgnore]
         public virtual ICollection<AutomatedTransaction> AutomatedTransactions { get; set; }
         [JsonIgnore]

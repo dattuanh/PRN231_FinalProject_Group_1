@@ -1,22 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using PRN231_FinalProject_API.Models;
+using PRN231_FinalProject_Client.Models;
 
 namespace PRN231_FinalProject_Client.Pages.Incomes
 {
     public class EditModel : PageModel
     {
-        private readonly PRN221_ProjectContext _context;
+        private readonly HttpClient client = null;
+        private string ApiUrl = "https://localhost:7203";
 
-        public EditModel(PRN221_ProjectContext context)
+        public EditModel()
         {
-            _context = context;
+            client = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            client.DefaultRequestHeaders.Accept.Add(contentType);
         }
 
         [BindProperty]
@@ -24,18 +29,26 @@ namespace PRN231_FinalProject_Client.Pages.Incomes
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Incomes == null)
+            if (id == null)
             {
                 return NotFound();
             }
-
-            var income =  await _context.Incomes.FirstOrDefaultAsync(m => m.IncomeId == id);
+            var response = await client.GetAsync(ApiUrl + $"/api/Incomes/{id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                return NotFound();
+            }
+            var strData = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            var income = JsonSerializer.Deserialize<Income>(strData, options);
             if (income == null)
             {
                 return NotFound();
             }
             Income = income;
-           ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId");
             return Page();
         }
 
@@ -48,30 +61,15 @@ namespace PRN231_FinalProject_Client.Pages.Incomes
                 return Page();
             }
 
-            _context.Attach(Income).State = EntityState.Modified;
-
-            try
+            var response = await client.PutAsJsonAsync(ApiUrl + $"/api/Incomes/{Income.IncomeId}", Income);
+            if (!response.IsSuccessStatusCode)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!IncomeExists(Income.IncomeId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return Page();
             }
 
             return RedirectToPage("./Index");
         }
 
-        private bool IncomeExists(int id)
-        {
-          return (_context.Incomes?.Any(e => e.IncomeId == id)).GetValueOrDefault();
-        }
+        
     }
 }
