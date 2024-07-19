@@ -43,6 +43,17 @@ namespace PRN231_FinalProject_API.Controllers
             }
             return paymentReminders;
         }
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<List<PaymentReminder>>> GetPaymentRemindesrByUserId(int userId)
+        {
+            if (_context.PaymentReminders == null)
+            {
+                return NotFound();
+            }
+            var paymentReminders = await _context.PaymentReminders.Where(p=>p.UserId== userId).ToListAsync();
+
+            return paymentReminders;
+        }
 
         // GET: api/PaymentReminders/5
         [HttpGet("{id}")]

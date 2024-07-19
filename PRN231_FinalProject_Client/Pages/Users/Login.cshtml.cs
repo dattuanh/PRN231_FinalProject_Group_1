@@ -30,7 +30,21 @@ namespace PRN231_FinalProject_Client.Pages.Users
         {
             return Page();
         }
-
+        public IActionResult OnPostLogout()
+        {
+            HttpContext.Session.Remove("Username");
+            HttpContext.Session.Remove("UserId");
+            HttpContext.Session.Remove("JWTToken");
+            HttpContext.Session.Remove("RemindersCount");
+            return RedirectToPage("/Users/Login");
+        }
+        //public void OnPostRegister()
+        //{
+        //    return;
+        //    string a = "";
+        //    Response.
+        //    //Response.Redirect("/Users/Register");
+        //}
         public async Task<IActionResult> OnPost()
         {
             if (!ModelState.IsValid)
@@ -64,8 +78,7 @@ namespace PRN231_FinalProject_Client.Pages.Users
                 response = await client.GetAsync("https://localhost:7203/api/Users");
                 strData = await response.Content.ReadAsStringAsync();
                 HttpContext.Session.SetInt32("RemindersCount", reminders.Count);
-                List<string> strings = new List<string>();
-                return RedirectToPage("/Index");
+                return RedirectToPage("/PaymentReminders/Index");
             }
             else
             {

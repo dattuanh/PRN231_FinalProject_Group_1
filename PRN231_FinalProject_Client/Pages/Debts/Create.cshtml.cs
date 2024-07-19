@@ -39,7 +39,7 @@ namespace PRN231_FinalProject_Client.Pages.Debts
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             DebtsLoan.UserId = userId;
-            DebtsLoan.Type = ...;
+            //DebtsLoan.Type = ...;
             if (ModelState.IsValid)
             {
                 var json = JsonConvert.SerializeObject(DebtsLoan);
