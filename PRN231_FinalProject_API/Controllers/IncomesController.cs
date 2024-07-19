@@ -48,7 +48,6 @@ namespace PRN231_FinalProject_API.Controllers
 
             return income;
         }
-<<<<<<< HEAD
         [HttpGet("User/{uid}")]
         public async Task<ActionResult<IEnumerable<Income>>> GetUserIncome(int uid)
         {
@@ -68,11 +67,6 @@ namespace PRN231_FinalProject_API.Controllers
             return income;
         }
 
-=======
-
-        // PUT: api/Incomes/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
->>>>>>> 844b203b150b21fc6ca7dde95d07cdbe2df47034
         [HttpPut("{id}")]
         public async Task<IActionResult> PutIncome(int id, Income income)
         {
@@ -141,8 +135,6 @@ namespace PRN231_FinalProject_API.Controllers
         {
             return (_context.Incomes?.Any(e => e.IncomeId == id)).GetValueOrDefault();
         }
-<<<<<<< HEAD
-=======
 
         [HttpGet("total")]
         public async Task<ActionResult<decimal>> GetTotalIncome(int id)
@@ -156,6 +148,5 @@ namespace PRN231_FinalProject_API.Controllers
             return Ok(totalIncome);
         }
 
->>>>>>> 844b203b150b21fc6ca7dde95d07cdbe2df47034
     }
 }

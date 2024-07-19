@@ -48,7 +48,6 @@ namespace PRN231_FinalProject_API.Controllers
 
             return expense;
         }
-<<<<<<< HEAD
         [HttpGet("User/{uid}")]
         public async Task<ActionResult<IEnumerable<Expense>>> GetUserExpense(int uid)
         {
@@ -65,8 +64,6 @@ namespace PRN231_FinalProject_API.Controllers
 
             return expense;
         }
-=======
->>>>>>> 844b203b150b21fc6ca7dde95d07cdbe2df47034
 
         // PUT: api/Expenses/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -138,8 +135,6 @@ namespace PRN231_FinalProject_API.Controllers
         {
             return (_context.Expenses?.Any(e => e.ExpenseId == id)).GetValueOrDefault();
         }
-<<<<<<< HEAD
-=======
 
         [HttpGet("total")]
         public async Task<ActionResult<decimal>> GetTotalExpense(int id)
@@ -178,6 +173,5 @@ namespace PRN231_FinalProject_API.Controllers
 
             return Ok(recentExpenses);
         }
->>>>>>> 844b203b150b21fc6ca7dde95d07cdbe2df47034
     }
 }
