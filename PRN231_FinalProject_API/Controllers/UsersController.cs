@@ -173,5 +173,18 @@ namespace PRN231_FinalProject_API.Controllers
         {
             return (_context.Users?.Any(e => e.UserId == id)).GetValueOrDefault();
         }
+
+        [HttpGet("total/{id}")]
+        public async Task<ActionResult<decimal>> GetTotalBalance(int id)
+        {
+            var currentUser = await _context.Users.FindAsync(id);
+
+            if (currentUser == null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(currentUser.Balance);
+        }
     }
 }
