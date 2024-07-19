@@ -18,25 +18,37 @@
             <div class="card-header">
                 <h3 class="card-title">Debts Management</h3>
                 <div class="card-tools">
-                    <div class="input-group input-group-sm" style="width: 150px;">
-                        <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-                        <div class="input-group-append">
-                            <button type="submit" class="btn btn-default">
-                                <i class="fas fa-search"></i>
-                            </button>
+                    <form method="get">
+                        <div class="input-group input-group-sm" style="width: 250px;">
+                            <input type="text" name="searchType" value="@Model.SearchType" class="form-control float-right" placeholder="Search by Type">
+                            <input type="hidden" name="sortBy" value="@Model.SortBy" />
+                            <input type="hidden" name="sortOrder" value="@Model.SortOrder" />
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
 
-            <div class="card-body table-responsive p-0" style="height: 300px;">
+            <div class="card-body table-responsive p-0" style="height: 500px;">
                 <table class="table table-head-fixed text-nowrap">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>Type</th>
-                            <th>Amount</th>
-                            <th>InterestRate</th>
+                            <th>
+                                <a asp-page="./Index" asp-route-sortBy="Amount" asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")">
+                                    Amount @(Model.SortBy == "Amount" ? (Model.SortOrder == "asc" ? "▲" : "▼") : "")
+                                </a>
+                            </th>
+                            <th>
+                                <a asp-page="./Index" asp-route-sortBy="InterestRate" asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")">
+                                    InterestRate @(Model.SortBy == "InterestRate" ? (Model.SortOrder == "asc" ? "▲" : "▼") : "")
+                                </a>
+                            </th>
                             <th>Description</th>
                             <th>Action</th>
                         </tr>

@@ -22,13 +22,33 @@ namespace PRN231_FinalProject_API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<DebtsLoan>>> GetDebtsLoans()
+        public async Task<ActionResult<IEnumerable<DebtsLoan>>> GetDebtsLoans([FromQuery] SearchDebtsDto dto)
         {
-          if (_context.DebtsLoans == null)
-          {
-              return NotFound();
-          }
-            return await _context.DebtsLoans.ToListAsync();
+            if (_context.DebtsLoans == null)
+            {
+                return NotFound();
+            }
+
+            var query = _context.DebtsLoans.AsQueryable();
+
+            if (!string.IsNullOrEmpty(dto.searchType)) 
+            {
+                query = query.Where(x => x.Type.Contains(dto.searchType));
+            }
+
+            if (!string.IsNullOrEmpty(dto.SortBy)) 
+            {
+                query = (dto.SortBy.ToLower(), dto.SortOrder?.ToLower()) switch
+                {
+                    ("amount", "desc") => query.OrderByDescending(x => x.Amount),
+                    ("amount", _) => query.OrderBy(x => x.Amount),
+                    ("interestrate", "desc") => query.OrderByDescending(x => x.InterestRate),
+                    ("interestrate", _) => query.OrderBy(x => x.InterestRate),
+                    _ => query // default
+                };
+            }
+
+            return await query.ToListAsync();
         }
 
         [HttpGet("{id}")]
