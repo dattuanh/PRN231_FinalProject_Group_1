@@ -135,5 +135,18 @@ namespace PRN231_FinalProject_API.Controllers
         {
             return (_context.Incomes?.Any(e => e.IncomeId == id)).GetValueOrDefault();
         }
+
+        [HttpGet("total")]
+        public async Task<ActionResult<decimal>> GetTotalIncome(int id)
+        {
+            
+
+            var totalIncome = await _context.Incomes
+                .Where(i => i.UserId == id)
+                .SumAsync(i => i.Amount);
+
+            return Ok(totalIncome);
+        }
+
     }
 }
