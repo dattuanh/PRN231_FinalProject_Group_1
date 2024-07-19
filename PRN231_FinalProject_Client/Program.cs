@@ -1,10 +1,7 @@
-<<<<<<< Updated upstream
-=======
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using PRN231_FinalProject_Client.Models;
 
->>>>>>> Stashed changes
 namespace PRN231_FinalProject_Client
 {
     public class Program
