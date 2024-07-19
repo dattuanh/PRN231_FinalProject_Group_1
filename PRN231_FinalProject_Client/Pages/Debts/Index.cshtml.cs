@@ -13,24 +13,30 @@ namespace PRN231_FinalProject_Client.Pages.Debts
 {
     public class IndexModel : PageModel
     {
-        private readonly HttpClient client = null;
-        private string ReportApiUrl = "";
+        private readonly HttpClient client;
+        private string ReportApiUrl = "https://localhost:7203/api/Debts";
 
         public IndexModel(ILogger<IndexModel> logger)
         {
             this.client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
-            ReportApiUrl = "https://localhost:7203/api/Debts";
         }
 
         public IList<DebtsLoan> DebtsLoan { get;set; }
+        public string SortBy { get; set; }
+        public string SortOrder { get; set; }
+        public string SearchType { get; set; }
+
 
         [HttpGet]
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(string sortBy = "Amount", string sortOrder = "asc", string searchType = "")
         {
+            SortBy = sortBy;
+            SortOrder = sortOrder;
+            SearchType = searchType;
 
-            string apiUrl = ReportApiUrl;
+            string apiUrl = $"{ReportApiUrl}?sortBy={sortBy}&sortOrder={sortOrder}&searchType={searchType}";
             HttpResponseMessage response = await client.GetAsync(apiUrl);
             string strData = await response.Content.ReadAsStringAsync();
 
@@ -43,5 +49,6 @@ namespace PRN231_FinalProject_Client.Pages.Debts
 
             DebtsLoan = listDebts.ToList();
         }
+
     }
 }
