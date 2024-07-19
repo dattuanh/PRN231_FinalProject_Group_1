@@ -43,6 +43,17 @@ namespace PRN231_FinalProject_API.Controllers
             }
             return paymentReminders;
         }
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<List<PaymentReminder>>> GetPaymentRemindesrByUserId(int userId)
+        {
+            if (_context.PaymentReminders == null)
+            {
+                return NotFound();
+            }
+            var paymentReminders = await _context.PaymentReminders.Where(p=>p.UserId== userId).ToListAsync();
+
+            return paymentReminders;
+        }
 
         // GET: api/PaymentReminders/5
         [HttpGet("{id}")]
@@ -131,6 +142,21 @@ namespace PRN231_FinalProject_API.Controllers
         private bool PaymentReminderExists(int id)
         {
             return (_context.PaymentReminders?.Any(e => e.ReminderId == id)).GetValueOrDefault();
+        }
+
+        [HttpGet("future/{userId}")]
+        public async Task<ActionResult<IEnumerable<PaymentReminder>>> GetFutureRemindersForUser(int userId)
+        {
+            var currentDate = DateTime.Now.Date;
+
+            var futureReminders = await _context.PaymentReminders
+                .Where(pr => pr.UserId == userId &&
+                             pr.ReminderDate.HasValue &&
+                             pr.ReminderDate.Value.Date > currentDate)
+                .OrderBy(pr => pr.ReminderDate)
+                .ToListAsync();
+
+            return Ok(futureReminders);
         }
     }
 }

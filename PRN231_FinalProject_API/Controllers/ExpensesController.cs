@@ -48,7 +48,10 @@ namespace PRN231_FinalProject_API.Controllers
 
             return expense;
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5036270e7a62d2dc9064e3987a59c2e124fe726a
         [HttpGet("User/{uid}")]
         public async Task<ActionResult<IEnumerable<Expense>>> GetUserExpense(int uid)
         {
@@ -56,20 +59,34 @@ namespace PRN231_FinalProject_API.Controllers
             {
                 return NotFound();
             }
+<<<<<<< HEAD
             var expenses = await _context.Expenses.Where(i => i.UserId == uid).ToListAsync();
 
             if (expenses == null)
+=======
+            var expense = await _context.Expenses.Where(e=>e.UserId==uid).ToListAsync();
+
+            if (expense == null)
+>>>>>>> 5036270e7a62d2dc9064e3987a59c2e124fe726a
             {
                 return NotFound();
             }
 
+<<<<<<< HEAD
             return expenses;
+=======
+            return expense;
+>>>>>>> 5036270e7a62d2dc9064e3987a59c2e124fe726a
         }
 
         // PUT: api/Expenses/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+<<<<<<< HEAD
         public async Task<IActionResult> PutExpense(int id, [FromBody]Expense expense)
+=======
+        public async Task<IActionResult> PutExpense(int id, Expense expense)
+>>>>>>> 5036270e7a62d2dc9064e3987a59c2e124fe726a
         {
             if (id != expense.ExpenseId)
             {
@@ -136,5 +153,46 @@ namespace PRN231_FinalProject_API.Controllers
         {
             return (_context.Expenses?.Any(e => e.ExpenseId == id)).GetValueOrDefault();
         }
+<<<<<<< HEAD
+=======
+
+        [HttpGet("total")]
+        public async Task<ActionResult<decimal>> GetTotalExpense(int id)
+        {
+            
+            
+
+            var totalExpense = await _context.Expenses
+                .Where(e => e.UserId == id)
+                .SumAsync(e => e.Amount);
+
+            return Ok(totalExpense);
+        }
+
+        [HttpGet("recent/{userId}")]
+        public async Task<ActionResult<IEnumerable<Expense>>> GetRecentExpenses(int userId)
+        {
+            var recentExpenses = await _context.Expenses
+                .Where(e => e.UserId == userId)
+                .OrderByDescending(e => e.ExpenseDate)
+                .Take(5)
+                .Select(e => new
+                {
+                    e.ExpenseId,
+                    e.ExpenseDate,
+                    e.Amount,
+                    e.Category,
+                    e.Description
+                })
+                .ToListAsync();
+
+            if (recentExpenses == null || !recentExpenses.Any())
+            {
+                return NotFound("No recent expenses found for this user.");
+            }
+
+            return Ok(recentExpenses);
+        }
+>>>>>>> 5036270e7a62d2dc9064e3987a59c2e124fe726a
     }
 }

@@ -1,0 +1,142 @@
+﻿@page
+@using PRN231_FinalProject_Client.Models
+@model PRN231_FinalProject_Client.Pages.PaymentReminders.IndexModel
+@{
+}
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    // var countID = 0;
+}
+<style>
+    .pagination a {
+        color: black;
+        float: left;
+        padding: 8px 16px;
+        text-decoration: none;
+        transition: background-color .3s;
+    }
+
+        .pagination a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .pagination a:hover:not(.active) {
+            background-color: #ddd;
+        }
+</style>
+<h1>PaymentReminders Management</h1>
+
+<p>
+    <button><a asp-page="Create">Create New</a></button>
+</p>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <form as>
+                <div class="card-header">
+                    <h3 class="card-title">PaymentReminders Management</h3>
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="reminderSearch" class="form-control float-right" placeholder="Search">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="card-body table-responsive p-0" style="height: 300px;">
+                <table class="table table-head-fixed text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>Reminder Date</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.PaymentRemindersList)
+                        {
+                            <tr>
+                                <td>@item.ReminderDate</td>
+                                <td>@item.Description</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @{
+                int CurrentPage = 1; // Example current page
+                int TotalPages = 10; // Example total pages
+
+            }
+            @*   <div class="pagination">
+            @for (int i = 1; i <= TotalPages; i++)
+            {
+            <a href="?page=@i" class="@(CurrentPage == i ? "active" : "")">@(i)</a>
+            }
+            </div> *@
+            @if (@Model.PaymentRemindersDueIn24List != null)
+            {
+                <div class="card-header">
+                    <h2 class="card-title">Due in 24H</h2>
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="DueIn24search" class="form-control float-right" placeholder="Search">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body table-responsive p-0" style="height: 300px;">
+
+                    <table class="table table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Reminder Date</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.PaymentRemindersDueIn24List)
+                            {
+                                <tr>
+                                    <td>@item.ReminderDate</td>
+                                    <td>@item.Description</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+
+@* <div id="htmlContainer">
+    <input type="submit" value="Check" onclick="Paging()" />
+</div> *@
+<script>
+    function Paging() {
+        $.ajax({
+            url: '/PaymentReminders/Index?handler=HtmlSnippet',
+            type: 'GET',
+            success: function (data) {
+                // Assuming you have a div with the ID 'htmlContainer' where you want to display the HTML
+                $('#htmlContainer').html(data);
+            },
+            error: function (error) {
+                console.log('Error:', error);
+            }
+        });
+    }
+
+</script>  

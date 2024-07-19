@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using PRN231_FinalProject_Client.Models;
 
 namespace PRN231_FinalProject_Client
 {
@@ -8,8 +9,10 @@ namespace PRN231_FinalProject_Client
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
             // Add services to the container.
             builder.Services.AddResponseCaching();
+            builder.Services.AddHttpClient();
             builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
             {
                 options.Conventions.AddPageApplicationModelConvention("/Pages/Users/Login", model =>

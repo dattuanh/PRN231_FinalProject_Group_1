@@ -5,7 +5,7 @@ namespace PRN231_FinalProject_API.Models
 {
     public partial class Budget
     {
-        public int BudgetId { get; set; }
+        public int? BudgetId { get; set; }
         public int? UserId { get; set; }
         public DateTime? Month { get; set; }
         public decimal? TotalBudget { get; set; }

@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Caching.Memory;
 using PRN231_FinalProject_Client.Models;
 
-namespace PRN231_FinalProject_Client.Pages.Incomes
+namespace PRN231_FinalProject_Client.Pages.Investments
 {
     public class CreateModel : PageModel
     {
@@ -22,44 +23,32 @@ namespace PRN231_FinalProject_Client.Pages.Incomes
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
 
-
         }
-        public List<string> Sources { get; set; }
         public IActionResult OnGet()
         {
-            //if (HttpContext.Session.GetString("Username") == null)
-            //{
-
-            //    return RedirectToPage("/Index");
-            //}
-            Sources = new List<string> { "Salary", "Hourly wage", "Interest income", "Child support", "Others" };
+        
             return Page();
         }
 
         [BindProperty]
-        public Income Income { get; set; } = default!;
-        
+        public Investment Investment { get; set; }
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid || Income == null)
+            if (!ModelState.IsValid || Investment == null)
             {
                 return Page();
             }
-            //var currentUser = _context.Users.FirstOrDefault(u => u.Username == HttpContext.Session.GetString("Username"));
-            var response = await client.GetAsync(ApiUrl + $"/api/Users/{HttpContext.Session.GetInt32("UserId")}");
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
             };
-            var currentUser = await JsonSerializer.DeserializeAsync<User>(await response.Content.ReadAsStreamAsync(), options);
-            Income.UserId = currentUser.UserId;
-            currentUser.Balance = currentUser.Balance + Income.Amount;
-            response = await client.PutAsync(ApiUrl + $"/api/Users/{currentUser.UserId}", new StringContent(JsonSerializer.Serialize(currentUser), System.Text.Encoding.UTF8, "application/json"));
-            var json = JsonSerializer.Serialize(Income);
+            Investment.UserId = HttpContext.Session.GetInt32("UserId");
+            //currentUser.Balance = currentUser.Balance - Investment.Amount;
+            var json = JsonSerializer.Serialize(Investment);
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-            response = await client.PostAsync(ApiUrl + "/api/Incomes/", content);
+            var response = await client.PostAsync(ApiUrl + "/api/Investments/", content);
             if (response.IsSuccessStatusCode)
             {
                 return RedirectToPage("./Index");

@@ -48,9 +48,25 @@ namespace PRN231_FinalProject_API.Controllers
 
             return income;
         }
+        [HttpGet("User/{uid}")]
+        public async Task<ActionResult<IEnumerable<Income>>> GetUserIncome(int uid)
+        {
+          if (_context.Incomes == null)
+          {
+              return NotFound();
+          }
+            var income = await _context.Incomes.Where(i=>i.UserId==uid)
+                .OrderByDescending(i=>i.IncomeDate)
+                .ToListAsync();
 
-        // PUT: api/Incomes/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+            if (income == null)
+            {
+                return NotFound();
+            }
+
+            return income;
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutIncome(int id, Income income)
         {
@@ -119,5 +135,18 @@ namespace PRN231_FinalProject_API.Controllers
         {
             return (_context.Incomes?.Any(e => e.IncomeId == id)).GetValueOrDefault();
         }
+
+        [HttpGet("total")]
+        public async Task<ActionResult<decimal>> GetTotalIncome(int id)
+        {
+            
+
+            var totalIncome = await _context.Incomes
+                .Where(i => i.UserId == id)
+                .SumAsync(i => i.Amount);
+
+            return Ok(totalIncome);
+        }
+
     }
 }

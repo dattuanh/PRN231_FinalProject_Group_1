@@ -1,0 +1,96 @@
+﻿@page
+@model PRN231_FinalProject_Client.Pages.Debts.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    var countID = 0;
+}
+
+<h1>Debts and Loans Management</h1>
+
+<p>
+    <button><a asp-page="Create">Create New</a></button>
+</p>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Debts Management</h3>
+                <div class="card-tools">
+                    <form method="get">
+                        <div class="input-group input-group-sm" style="width: 250px;">
+                            <input type="text" name="searchType" value="@Model.SearchType" class="form-control float-right" placeholder="Search by Type">
+                            <input type="hidden" name="sortBy" value="@Model.SortBy" />
+                            <input type="hidden" name="sortOrder" value="@Model.SortOrder" />
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card-body table-responsive p-0" style="height: 500px;">
+                <table class="table table-head-fixed text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>
+                                <a asp-page="./Index" asp-route-sortBy="Amount" asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")">
+                                    Amount @(Model.SortBy == "Amount" ? (Model.SortOrder == "asc" ? "▲" : "▼") : "")
+                                </a>
+                            </th>
+                            <th>
+                                <a asp-page="./Index" asp-route-sortBy="InterestRate" asp-route-sortOrder="@(Model.SortOrder == "asc" ? "desc" : "asc")">
+                                    InterestRate @(Model.SortBy == "InterestRate" ? (Model.SortOrder == "asc" ? "▲" : "▼") : "")
+                                </a>
+                            </th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.DebtsLoan)
+                        {
+                            countID++;
+                            <tr>
+                                <td>
+                                    @countID
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Type)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Amount)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.InterestRate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+                                <td>
+                                    <a asp-page="./Edit" asp-route-id="@item.DebtLoanId">
+                                        <button class="btn btn-primary">Edit</button>
+                                    </a>|
+                                    <a asp-page="./Details" asp-route-id="@item.DebtLoanId">
+                                        <button class="btn badge-warning">Details</button>
+                                    </a> |
+                                    <a asp-page="./Delete" asp-route-id="@item.DebtLoanId">
+                                        <button class="btn btn-danger">Delete</button>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+</div>

@@ -1,21 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using PRN231_FinalProject_API.Models;
+using PRN231_FinalProject_Client.Models;
 
 namespace PRN231_FinalProject_Client.Pages.Incomes
 {
     public class DeleteModel : PageModel
     {
-        private readonly PRN221_ProjectContext _context;
+        private readonly HttpClient _httpClient;
+        private readonly string BASE_URL = "https://localhost:7203";
 
-        public DeleteModel(PRN221_ProjectContext context)
+        public DeleteModel()
         {
-            _context = context;
+            _httpClient = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            _httpClient.DefaultRequestHeaders.Accept.Add(contentType);
         }
 
         [BindProperty]
@@ -23,12 +28,22 @@ namespace PRN231_FinalProject_Client.Pages.Incomes
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Incomes == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var income = await _context.Incomes.FirstOrDefaultAsync(m => m.IncomeId == id);
+            var response = await _httpClient.GetAsync(BASE_URL + $"/api/Incomes/{id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                return NotFound();
+            }
+            var strData = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            var income = JsonSerializer.Deserialize<Income>(strData, options);
 
             if (income == null)
             {
@@ -43,17 +58,14 @@ namespace PRN231_FinalProject_Client.Pages.Incomes
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (id == null || _context.Incomes == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var income = await _context.Incomes.FindAsync(id);
-
-            if (income != null)
+           var response = await _httpClient.DeleteAsync(BASE_URL + $"/api/Incomes/{id}");
+            if (!response.IsSuccessStatusCode)
             {
-                Income = income;
-                _context.Incomes.Remove(Income);
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
 
             return RedirectToPage("./Index");
