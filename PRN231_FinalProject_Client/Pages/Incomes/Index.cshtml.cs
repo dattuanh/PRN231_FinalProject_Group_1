@@ -21,7 +21,7 @@ namespace PRN231_FinalProject_Client.Pages.Incomes
         }
 
         public IList<Income> Income { get; set; } = default!;
-        public List<string> Sources { get; set; } = new List<string>();
+        public List<string> Sources { get; set; } =  new List<string> { "Salary", "Hourly wage", "Interest income", "Child support", "Others" };
 
         [BindProperty(SupportsGet = true)]
         public string SearchString { get; set; }
@@ -52,7 +52,7 @@ namespace PRN231_FinalProject_Client.Pages.Incomes
         [BindProperty(SupportsGet = true)]
         public string SelectedSource { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(string source)
         {
             var options = new JsonSerializerOptions
             {
@@ -80,15 +80,16 @@ namespace PRN231_FinalProject_Client.Pages.Incomes
                 incomes = incomes.Where(i => i.IncomeDate <= ToDate.Value).ToList();
             }
 
-            if (!string.IsNullOrEmpty(SelectedSource))
+            if (!string.IsNullOrEmpty(source))
+               
             {
-                incomes = incomes.Where(i => i.Source == SelectedSource).ToList();
+                SelectedSource = source;
+                incomes = incomes.Where(i => i.Source == source).ToList();
             }
 
             Income = incomes;
 
-            // Get unique sources for the dropdown
-            Sources = Income.Select(i => i.Source).Distinct().ToList();
+           
         }
     }
 }
