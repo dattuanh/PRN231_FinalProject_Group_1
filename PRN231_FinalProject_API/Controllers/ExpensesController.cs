@@ -49,6 +49,23 @@ namespace PRN231_FinalProject_API.Controllers
             return expense;
         }
 
+        [HttpGet("User/{uid}")]
+        public async Task<ActionResult<IEnumerable<Expense>>> GetUserExpense(int uid)
+        {
+            if (_context.Expenses == null)
+            {
+                return NotFound();
+            }
+            var expenses = await _context.Expenses.Where(i => i.UserId == uid).ToListAsync();
+
+            if (expenses == null)
+            {
+                return NotFound();
+            }
+
+            return expenses;
+        }
+
         // PUT: api/Expenses/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

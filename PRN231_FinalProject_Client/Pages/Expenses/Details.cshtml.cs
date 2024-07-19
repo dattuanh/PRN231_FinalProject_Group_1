@@ -35,14 +35,15 @@ namespace PRN231_FinalProject_Client.Pages.Expenses
 
         public async Task OnGetAsync(int ?id)
         {
-            var response = await client.GetAsync(ApiUrl + "/api/Users/1");
+            //int? userId = HttpContext.Session.GetInt32("UserId");
+            //var response = await client.GetAsync(ApiUrl + $"/api/Expenses/User/{userId}");
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
             };
-            var currentUser = await JsonSerializer.DeserializeAsync<User>(await response.Content.ReadAsStreamAsync(), options);
+            
 
-            response = await client.GetAsync(ApiUrl + "/api/Expenses/" + id);
+            var response = await client.GetAsync(ApiUrl + "/api/Expenses/" + id);
             string strData = await response.Content.ReadAsStringAsync();
             var expense = JsonSerializer.Deserialize<Expense>(strData, options);
 

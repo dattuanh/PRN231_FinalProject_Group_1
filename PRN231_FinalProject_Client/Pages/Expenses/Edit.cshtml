@@ -32,8 +32,13 @@
             </div>
             <div class="form-group">
                 <label asp-for="Expense.Category" class="control-label"></label>
-                <input asp-for="Expense.Category" class="form-control" />
-                <span asp-validation-for="Expense.Category" class="text-danger"></span>
+                <select asp-for="Expense.Category" class="form-control">
+                    <option value="">Select Category</option>
+                    @foreach (var source in Model.Sources)
+                    {
+                        <option value="@source">@source</option>
+                    }
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="Expense.Description" class="control-label"></label>

@@ -48,7 +48,7 @@ namespace PRN231_FinalProject_Client.Pages.Expenses
                 return Page();
             }
             //var currentUser = _context.Users.FirstOrDefault(u => u.Username == HttpContext.Session.GetString("Username"));
-            var response = await client.GetAsync(ApiUrl + "/api/Users");
+            var response = await client.GetAsync(ApiUrl + $"/api/Users/{HttpContext.Session.GetInt32("UserId")}");
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
@@ -56,7 +56,8 @@ namespace PRN231_FinalProject_Client.Pages.Expenses
             var currentUser = await JsonSerializer.DeserializeAsync<User>(await response.Content.ReadAsStreamAsync(), options);
             Expense.UserId = currentUser.UserId;
             currentUser.Balance = currentUser.Balance - Expense.Amount;
-            var json = JsonSerializer.Serialize(currentUser);
+            response = await client.PutAsync(ApiUrl + $"/api/Users/{currentUser.UserId}", new StringContent(JsonSerializer.Serialize(currentUser), System.Text.Encoding.UTF8, "application/json"));
+            var json = JsonSerializer.Serialize(Expense);
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             response = await client.PostAsync(ApiUrl + "/api/Expenses/", content);
             if (response.IsSuccessStatusCode)

@@ -32,20 +32,64 @@ namespace PRN231_FinalProject_Client.Pages.Expenses
 
         public IList<Expense> Expenses { get; set; } = default!;
 
+        [BindProperty(SupportsGet = true)]
+        public string SearchString { get; set; }
+
+
+        private DateTime? fromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+        [BindProperty(SupportsGet = true)]
+        public DateTime? FromDate
+        {
+            get { return fromDate; }
+            set
+            {
+                fromDate = value;
+            }
+        }
+        private DateTime? toDate = DateTime.Now;
+        [BindProperty(SupportsGet = true)]
+        public DateTime? ToDate
+        {
+            get
+            {
+                return toDate;
+            }
+            set
+            {
+                toDate = value;
+            }
+        }
+
         public async Task OnGetAsync()
         {
-            var response = await client.GetAsync(ApiUrl + "/api/Users/1");
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
             };
-            var currentUser = await JsonSerializer.DeserializeAsync<User>(await response.Content.ReadAsStreamAsync(), options);
 
-            response = await client.GetAsync(ApiUrl + "/api/Expenses");
+            int? id = HttpContext.Session.GetInt32("UserId");
+            var response = await client.GetAsync(ApiUrl + $"/api/Expenses/User/{id}");
             string strData = await response.Content.ReadAsStringAsync();
             var expense = JsonSerializer.Deserialize<List<Expense>>(strData, options);
 
+            // Apply filters
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                expense = expense.Where(i => i.Description.Contains(SearchString, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (FromDate.HasValue)
+            {
+                expense = expense.Where(i => i.ExpenseDate >= FromDate.Value).ToList();
+            }
+            if (ToDate.HasValue)
+            {
+                expense = expense.Where(i => i.ExpenseDate <= ToDate.Value).ToList();
+            }
+
+            
             Expenses = expense;
+
         }
     }
 }
