@@ -21,18 +21,36 @@ namespace PRN231_FinalProject_API.Controllers
             _context = context;
         }
 
-        // GET: api/Debts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<DebtsLoan>>> GetDebtsLoans()
+        public async Task<ActionResult<IEnumerable<DebtsLoan>>> GetDebtsLoans([FromQuery] SearchDebtsDto dto)
         {
-          if (_context.DebtsLoans == null)
-          {
-              return NotFound();
-          }
-            return await _context.DebtsLoans.ToListAsync();
+            if (_context.DebtsLoans == null)
+            {
+                return NotFound();
+            }
+
+            var query = _context.DebtsLoans.AsQueryable();
+
+            if (!string.IsNullOrEmpty(dto.searchType)) 
+            {
+                query = query.Where(x => x.Type.Contains(dto.searchType));
+            }
+
+            if (!string.IsNullOrEmpty(dto.SortBy)) 
+            {
+                query = (dto.SortBy.ToLower(), dto.SortOrder?.ToLower()) switch
+                {
+                    ("amount", "desc") => query.OrderByDescending(x => x.Amount),
+                    ("amount", _) => query.OrderBy(x => x.Amount),
+                    ("interestrate", "desc") => query.OrderByDescending(x => x.InterestRate),
+                    ("interestrate", _) => query.OrderBy(x => x.InterestRate),
+                    _ => query // default
+                };
+            }
+
+            return await query.ToListAsync();
         }
 
-        // GET: api/Debts/5
         [HttpGet("{id}")]
         public async Task<ActionResult<DebtsLoan>> GetDebtsLoan(int id)
         {
@@ -89,8 +107,6 @@ namespace PRN231_FinalProject_API.Controllers
             return NoContent();
         }
 
-        // PUT: api/Debts/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDebtsLoan(int id, DebtsLoan debtsLoan)
         {
@@ -120,8 +136,6 @@ namespace PRN231_FinalProject_API.Controllers
             return NoContent();
         }
 
-        // POST: api/Debts
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<DebtsLoan>> PostDebtsLoan(DebtsDTO dto)
         {
@@ -145,7 +159,6 @@ namespace PRN231_FinalProject_API.Controllers
             return CreatedAtAction("GetDebtsLoan", new { id = debtsLoan.DebtLoanId }, debtsLoan);
         }
 
-        // DELETE: api/Debts/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDebtsLoan(int id)
         {
