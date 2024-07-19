@@ -1,9 +1,5 @@
-<<<<<<< Updated upstream
-﻿using Microsoft.AspNetCore.Mvc;
-=======
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
->>>>>>> Stashed changes
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
@@ -18,18 +14,6 @@ namespace PRN231_FinalProject_Client.Pages
  
     public class IndexModel : PageModel
     {
-<<<<<<< Updated upstream
-        private readonly ILogger<IndexModel> _logger;
-
-        public IndexModel(ILogger<IndexModel> logger)
-        {
-            _logger = logger;
-        }
-
-        public void OnGet()
-        {
-
-=======
         private readonly HttpClient _httpClient;
         private readonly ILogger<IndexModel> _logger;
         private readonly PRN221_ProjectContext _context;
@@ -40,7 +24,6 @@ namespace PRN231_FinalProject_Client.Pages
             _context = context;
             _httpClient = httpClient;
             _configuration = configuration;
->>>>>>> Stashed changes
         }
 
         public decimal TotalExpense { get; set; }
