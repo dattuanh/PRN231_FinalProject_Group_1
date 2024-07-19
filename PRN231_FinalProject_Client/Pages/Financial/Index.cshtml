@@ -1,6 +1,7 @@
 ﻿@page
 @model PRN231_FinalProject_Client.Pages.Financial.IndexModel
 @{
+    var userId = HttpContext.Session.GetInt32("UserId");
 }
 
 <style>
@@ -204,7 +205,7 @@
 
         function updateBudget() {
             var newBudget = $('#newBudget').val();
-            var userId = '1'; // Make sure this is correctly set
+            var userId = @userId; // Make sure this is correctly set
 
             console.log('Updating budget for user:', userId);
             console.log('New budget value:', newBudget);
