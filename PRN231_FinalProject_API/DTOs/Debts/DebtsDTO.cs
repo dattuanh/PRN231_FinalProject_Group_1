@@ -20,4 +20,14 @@ namespace PRN231_FinalProject_API.DTOs.Debts
 
         public string? Description { get; set; }
     }
+
+    public class SearchDebtsDto 
+    {
+        // filter
+        public string? searchType { get; set; }
+
+        // sorting
+        public string? SortBy { get; set; } 
+        public string? SortOrder { get; set; }
+    }
 }
