@@ -96,6 +96,24 @@ namespace PRN231_FinalProject_API.Controllers
             return NoContent();
         }
 
+        public class BudgetUpdateModel
+        {
+            public decimal TotalBudget { get; set; }
+        }
+
+        [HttpPut("User/{uid}")]
+        public async Task<ActionResult<Budget>> UpdateUserBudget(int uid, [FromBody] BudgetUpdateModel model)
+        {
+            var budget = _context.Budgets.FirstOrDefault(b => b.UserId == uid);
+            if (budget == null)
+            {
+                return NotFound();
+            }
+            budget.TotalBudget = model.TotalBudget;
+            await _context.SaveChangesAsync();
+            return Ok(budget);
+        }
+
         // POST: api/Budgets
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]

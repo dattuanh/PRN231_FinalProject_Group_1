@@ -21,7 +21,8 @@ namespace PRN231_FinalProject_API
 
 
             var app = builder.Build();
-
+            app.UseCors(option => option.AllowAnyHeader().
+                AllowAnyMethod().AllowAnyOrigin());
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

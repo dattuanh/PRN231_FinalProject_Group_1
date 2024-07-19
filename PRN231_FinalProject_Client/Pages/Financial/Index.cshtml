@@ -2,6 +2,7 @@
 @model PRN231_FinalProject_Client.Pages.Financial.IndexModel
 @{
 }
+
 <style>
     .clearfix::after {
     content: "";
@@ -15,10 +16,10 @@
         <!-- small box -->
         <div class="small-box bg-white clearfix">
             <div class="inner">
-                <h3>Budget</h3>
+                <h3>Budget</h3><i class="fas fa-edit" style="cursor: pointer;" onclick="openBudgetEditForm()"></i>
                 <div class="bg-white" style="width: 50%; float: left;">
-                    <p>Current Budget</p>
-                    <p>@Model.Budget.ToString("C", new System.Globalization.CultureInfo(Model.culture))</p>
+                    <p>Current Budget</p> 
+                    <p class="budget-amount">@Model.Budget.ToString("C", new System.Globalization.CultureInfo(Model.culture))</p>
                     <p>Expense</p>
                     <p>@Model.TotalExpense.ToString("C", new System.Globalization.CultureInfo(Model.culture))</p>
                 </div>
@@ -41,6 +42,32 @@
     <div style="width: 50%; float: right;">
         <h2>Income and Expenses Over Time</h2>
         <canvas id="incomeExpenseChart"></canvas>
+    </div>
+</div>
+
+<!-- Budget Edit Modal -->
+<div class="modal fade" id="budgetEditModal" tabindex="-1" role="dialog" aria-labelledby="budgetEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="budgetEditModalLabel">Edit Budget</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="budgetEditForm">
+                    <div class="form-group">
+                        <label for="newBudget">New Budget:</label>
+                        <input type="number" class="form-control" id="newBudget" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="updateBudget()">Save changes</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -169,6 +196,52 @@
                     }
                 }
             });
+
         });
+        function openBudgetEditForm() {
+            $('#budgetEditModal').modal('show');
+        }
+
+        function updateBudget() {
+            var newBudget = $('#newBudget').val();
+            var userId = '1'; // Make sure this is correctly set
+
+            console.log('Updating budget for user:', userId);
+            console.log('New budget value:', newBudget);
+
+            // Create a Budget object that matches your API model
+            var budgetModel = {
+                userId: parseInt(userId),
+                totalBudget: parseFloat(newBudget)
+            };
+
+            fetch(`https://localhost:7203/api/Budgets/User/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(budgetModel)
+            })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Received data:', data);
+                    $('#budgetEditModal').modal('hide');
+                    // Update the displayed budget
+                    $('.budget-amount').text(data.totalBudget.toLocaleString('@Model.culture'));
+                    // You might want to refresh other parts of your page here
+                })
+                .catch((error) => {
+                    console.error('Error details:', error);
+                    alert('An error occurred while updating the budget. Check console for details.');
+                });
+        }
     </script>
 }
