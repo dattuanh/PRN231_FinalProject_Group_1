@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PRN231_FinalProject_Client.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace PRN231_FinalProject_Client.Pages.Incomes
 {
@@ -25,11 +26,28 @@ namespace PRN231_FinalProject_Client.Pages.Incomes
         [BindProperty(SupportsGet = true)]
         public string SearchString { get; set; }
 
+        
+        private DateTime? fromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
         [BindProperty(SupportsGet = true)]
-        public DateTime? FromDate { get; set; }
-
+        public DateTime? FromDate { 
+            get {return fromDate; }
+            set
+            {
+                fromDate = value;
+            }
+            }
+        private DateTime? toDate = DateTime.Now;
         [BindProperty(SupportsGet = true)]
-        public DateTime? ToDate { get; set; }
+        public DateTime? ToDate {
+            get
+            {
+                return toDate;
+            }
+            set
+            {
+                toDate = value;
+            } 
+        }
 
         [BindProperty(SupportsGet = true)]
         public string SelectedSource { get; set; }

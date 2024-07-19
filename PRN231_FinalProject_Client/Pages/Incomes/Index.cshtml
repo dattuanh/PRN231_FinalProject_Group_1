@@ -11,11 +11,12 @@
     <div class="card-header">
         <h3 class="card-title">Entry</h3>
         <div class="card-tools">
+            <div id="dateAlert" class="alert alert-danger" style="display: none;"></div>
             <form method="get">
                 <div class="input-group">
                     <input type="text" name="searchString" class="form-control" placeholder="Search by description" value="@Model.SearchString">
-                    <input type="date" name="fromDate" class="form-control" value="@Model.FromDate?.ToString("yyyy-MM-dd")">
-                    <input type="date" name="toDate" class="form-control" value="@Model.ToDate?.ToString("yyyy-MM-dd")">
+                    <input type="date" id="fromDate" name="fromDate" class="form-control" value="@Model.FromDate?.ToString("yyyy-MM-dd")">
+                    <input type="date" id="toDate" name="toDate" class="form-control" value="@Model.ToDate?.ToString("yyyy-MM-dd")">
                     <select name="source" class="form-control">
                         <option value="">All Sources</option>
                         @foreach (var source in Model.Sources)
@@ -78,3 +79,48 @@
         </table>
     </div>
 </div>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fromDateInput = document.getElementById('fromDate');
+            const toDateInput = document.getElementById('toDate');
+            const alertDiv = document.getElementById('dateAlert');
+            const submitButton = document.querySelector('button[type="submit"]');
+
+            function validateDates() {
+                const fromDate = new Date(fromDateInput.value);
+                const toDate = new Date(toDateInput.value);
+                const today = new Date();
+                
+
+                let errorMessage = '';
+
+                if (fromDate > today || toDate > today) {
+                    errorMessage = 'Dates cannot be in the future.';
+                } else if (fromDate > toDate) {
+                    errorMessage = 'From Date cannot be later than To Date.';
+                }
+
+                if (errorMessage) {
+                    alertDiv.textContent = errorMessage;
+                    alertDiv.style.display = 'block';
+                    submitButton.disabled = true;
+                } else {
+                    alertDiv.style.display = 'none';
+                    submitButton.disabled = false;
+                }
+            }
+
+            fromDateInput.addEventListener('change', validateDates);
+            toDateInput.addEventListener('change', validateDates);
+
+            // Set max date for both inputs to today
+            const today = new Date().toISOString().split('T')[0];
+            fromDateInput.max = today;
+            toDateInput.max = today;
+
+            // Initial validation
+            validateDates();
+        });
+    </script>
+}
