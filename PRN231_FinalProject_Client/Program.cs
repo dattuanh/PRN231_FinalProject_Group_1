@@ -12,6 +12,7 @@ namespace PRN231_FinalProject_Client
 
             // Add services to the container.
             builder.Services.AddResponseCaching();
+            builder.Services.AddHttpClient();
             builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
             {
                 options.Conventions.AddPageApplicationModelConvention("/Pages/Users/Login", model =>

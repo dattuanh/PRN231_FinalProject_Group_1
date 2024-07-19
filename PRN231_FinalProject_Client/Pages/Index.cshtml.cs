@@ -16,12 +16,12 @@ namespace PRN231_FinalProject_Client.Pages
     {
         private readonly HttpClient _httpClient;
         private readonly ILogger<IndexModel> _logger;
-        private readonly PRN221_ProjectContext _context;
+        
         private readonly IConfiguration _configuration;
-        public IndexModel(ILogger<IndexModel> logger, PRN221_ProjectContext context, HttpClient httpClient, IConfiguration configuration)
+        public IndexModel(ILogger<IndexModel> logger, HttpClient httpClient, IConfiguration configuration)
         {
             _logger = logger;
-            _context = context;
+         
             _httpClient = httpClient;
             _configuration = configuration;
         }
@@ -30,7 +30,7 @@ namespace PRN231_FinalProject_Client.Pages
         public decimal TotalIncome { get; set; }
         public decimal Balance { get; set; }
         public decimal Budget { get; set; }
-
+       
         [BindProperty(SupportsGet = true)]
 
         public List<Expense> RecentExpenses { get; set; }
@@ -52,28 +52,29 @@ namespace PRN231_FinalProject_Client.Pages
                     return;
                 }
                 var apiUrl = "https://localhost:7203";
-                var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == HttpContext.Session.GetString("Username"));
-                if (currentUser == null)
-                {
-                    // Handle case where user is not found
-                    return;
-                }
-                Balance = (decimal)currentUser.Balance;
+                User user = new User();
+                
+              
+                var userUrl = $"{apiUrl}/api/Users/{userId}";
                 var incomeUrl = $"{apiUrl}/api/Incomes/total?id={userId}";
                 var expenseUrl = $"{apiUrl}/api/Expenses/total?id={userId}";
                 var paymentUrl = $"{apiUrl}/api/PaymentReminders/GetFutureRemindersForUser/future/{userId}";
                 var recentExpensesUrl = $"{apiUrl}/api/Expenses/recent/{userId}";
 
+                using var userResponse = await _httpClient.GetAsync(userUrl, HttpCompletionOption.ResponseHeadersRead);
                 using var incomeResponse = await _httpClient.GetAsync(incomeUrl, HttpCompletionOption.ResponseHeadersRead);
                 using var expenseResponse = await _httpClient.GetAsync(expenseUrl, HttpCompletionOption.ResponseHeadersRead);
                 using var paymentResponse = await _httpClient.GetAsync(paymentUrl, HttpCompletionOption.ResponseHeadersRead);
                 using var recentExpensesResponse = await _httpClient.GetAsync(recentExpensesUrl, HttpCompletionOption.ResponseHeadersRead);
 
+                userResponse.EnsureSuccessStatusCode();
                 incomeResponse.EnsureSuccessStatusCode();
                 expenseResponse.EnsureSuccessStatusCode();
                 paymentResponse.EnsureSuccessStatusCode();
                 recentExpensesResponse.EnsureSuccessStatusCode();
-
+                
+                user= await userResponse.Content.ReadFromJsonAsync<User>();
+                Balance = user.Balance;
                 TotalIncome = await incomeResponse.Content.ReadFromJsonAsync<decimal>();
                 TotalExpense = await expenseResponse.Content.ReadFromJsonAsync<decimal>();
                 PaymentReminders = await paymentResponse.Content.ReadFromJsonAsync<List<PaymentReminder>>();

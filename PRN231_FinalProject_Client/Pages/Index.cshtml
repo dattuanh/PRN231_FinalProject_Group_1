@@ -94,8 +94,8 @@
                         @foreach (var expense in Model.RecentExpenses)
                         {
                             <tr>
-                                <td>@expense.ExpenseDate?.ToString("d")</td>
-                                <td>@expense.Amount?.ToString("C")</td>
+                                <td>@expense.ExpenseDate.ToString("d")</td>
+                                <td>@expense.Amount.ToString("C",new System.Globalization.CultureInfo(Model.culture))</td>
                                 <td>@expense.Category</td>
                                 <td>@expense.Description</td>
                             </tr>
