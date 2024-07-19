@@ -143,6 +143,11 @@ namespace PRN231_FinalProject_API.Controllers
             {
                 return Problem("Entity set 'PRN221_ProjectContext.Users'  is null.");
             }
+            var userexist = await _context.Users.Where(u => u.Username.Equals(user.Username)).FirstOrDefaultAsync();
+            if(userexist!=null)
+            {
+                return Problem("User Exist.");
+            }
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace PRN231_FinalProject_Client.Models
 {
@@ -18,10 +19,13 @@ namespace PRN231_FinalProject_Client.Models
             Securities = new HashSet<Security>();
             TransactionLogs = new HashSet<TransactionLog>();
         }
-
+       
         public int UserId { get; set; }
+        [Required(ErrorMessage = "Please enter your username")]
         public string Username { get; set; } = null!;
+        [Required(ErrorMessage = "Please enter your Password")]
         public string Password { get; set; } = null!;
+        [Required(ErrorMessage = "Please enter your Email")]
         public string Email { get; set; } = null!;
         public decimal Balance { get; set; }
 

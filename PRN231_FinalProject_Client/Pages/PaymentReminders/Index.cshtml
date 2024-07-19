@@ -32,15 +32,15 @@
 <p>
     <button><a asp-page="Create">Create New</a></button>
 </p>
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <form as>
+<form method="get">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">PaymentReminders Management</h3>
                     <div class="card-tools">
                         <div class="input-group input-group-sm" style="width: 150px;">
-                            <input type="text" name="reminderSearch" class="form-control float-right" placeholder="Search">
+                            <input type="text" name="SearchTypeReminders" class="form-control float-right" placeholder="Search">
                             <div class="input-group-append">
                                 <button type="submit" class="btn btn-default">
                                     <i class="fas fa-search"></i>
@@ -49,78 +49,120 @@
                         </div>
                     </div>
                 </div>
-            </form>
-            <div class="card-body table-responsive p-0" style="height: 300px;">
-                <table class="table table-head-fixed text-nowrap">
-                    <thead>
-                        <tr>
-                            <th>Reminder Date</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.PaymentRemindersList)
-                        {
-                            <tr>
-                                <td>@item.ReminderDate</td>
-                                <td>@item.Description</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            @{
-                int CurrentPage = 1; // Example current page
-                int TotalPages = 10; // Example total pages
 
-            }
-            @*   <div class="pagination">
-            @for (int i = 1; i <= TotalPages; i++)
-            {
-            <a href="?page=@i" class="@(CurrentPage == i ? "active" : "")">@(i)</a>
-            }
-            </div> *@
-            @if (@Model.PaymentRemindersDueIn24List != null)
-            {
-                <div class="card-header">
-                    <h2 class="card-title">Due in 24H</h2>
-                    <div class="card-tools">
-                        <div class="input-group input-group-sm" style="width: 150px;">
-                            <input type="text" name="DueIn24search" class="form-control float-right" placeholder="Search">
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-default">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div class="card-body table-responsive p-0" style="height: 300px;">
-
                     <table class="table table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th>Reminder Date</th>
+                                @*   <th>Reminder Date</th>
+                                <th>Description</th> *@
+                                <th>
+                                    <a asp-page="./Index" asp-route-SortByReminders="reminderdate" asp-route-SortOrderReminders="@(Model.SortOrderReminders == "asc" ? "desc" : "asc")">
+                                        Amount @(Model.SortOrderReminders == "asc" ? "▲" : "▼")
+                                    </a>
+                                </th>
                                 <th>Description</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model.PaymentRemindersDueIn24List)
+                            @foreach (var item in Model.PaymentRemindersList)
                             {
                                 <tr>
                                     <td>@item.ReminderDate</td>
                                     <td>@item.Description</td>
+                                    <td>
+                                        <a asp-page="./Edit" class="btn btn-primary" asp-route-id="@item.ReminderId">
+                                            @* <button class="btn btn-primary">Edit</button> *@
+                                            Edit
+                                        </a>|
+                                        <a asp-page="./Details" class="btn badge-warning" asp-route-id="@item.ReminderId">
+                                            @* <button class="btn badge-warning">Details</button> *@
+                                            Details
+                                        </a> |
+                                        <a asp-page="./Delete" class="btn btn-danger" asp-route-id="@item.ReminderId">
+                                            @* <button class="btn btn-danger">Delete</button> *@
+                                            Delete
+                                        </a>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
                 </div>
-            }
+                @{
+                    int CurrentPage = 1; // Example current page
+                    int TotalPages = 10; // Example total pages
+
+                }
+                @*   <div class="pagination">
+                @for (int i = 1; i <= TotalPages; i++)
+                {
+                <a href="?page=@i" class="@(CurrentPage == i ? "active" : "")">@(i)</a>
+                }
+                </div> *@
+                @if (@Model.PaymentRemindersDueIn24List != null)
+                {
+                    <div class="card-header">
+                        <h2 class="card-title">Due in 24H</h2>
+                        <div class="card-tools">
+                            <div class="input-group input-group-sm" style="width: 150px;">
+                                <input type="text" name="SearchTypeRemindersIn24h" class="form-control float-right" placeholder="Search">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body table-responsive p-0" style="height: 300px;">
+
+                        <table class="table table-head-fixed text-nowrap">
+                            <thead>
+                                <tr>
+                                    <td>
+                                        <a asp-page="./Index" asp-route-SortByRemindersIn24h="reminderdate" asp-route-SortOrderRemindersIn24h="@(Model.SortOrderRemindersIn24h == "asc" ? "desc" : "asc")">
+                                            Amount @(Model.SortOrderRemindersIn24h == "asc" ? "▲" : "▼")
+                                        </a>
+                                    </td>
+                                    <th>Description</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.PaymentRemindersDueIn24List)
+                                {
+                                    <tr>
+                                        <td>
+                                            @item.ReminderDate
+                                        </td>
+                                        <td>@item.Description</td>
+                                        <td>
+                                            <a asp-page="./Edit" class="btn btn-primary" asp-route-id="@item.ReminderId">
+                                                @* <button class="btn btn-primary">Edit</button> *@
+                                                Edit
+                                            </a>|
+                                            <a asp-page="./Details" class="btn badge-warning" asp-route-id="@item.ReminderId">
+                                                @* <button class="btn badge-warning">Details</button> *@
+                                                Details
+                                            </a> |
+                                            <a asp-page="./Delete" class="btn btn-danger" asp-route-id="@item.ReminderId">
+                                                @* <button class="btn btn-danger">Delete</button> *@
+                                                Delete
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+
         </div>
-
     </div>
-</div>
-
+</form>
 @* <div id="htmlContainer">
     <input type="submit" value="Check" onclick="Paging()" />
 </div> *@
