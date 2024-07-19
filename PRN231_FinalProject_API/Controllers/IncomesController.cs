@@ -55,7 +55,9 @@ namespace PRN231_FinalProject_API.Controllers
           {
               return NotFound();
           }
-            var income = await _context.Incomes.Where(i=>i.UserId==uid).ToListAsync();
+            var income = await _context.Incomes.Where(i=>i.UserId==uid)
+                .OrderByDescending(i=>i.IncomeDate)
+                .ToListAsync();
 
             if (income == null)
             {

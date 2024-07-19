@@ -1,31 +1,37 @@
 ﻿@page
 @model PRN231_FinalProject_Client.Pages.Incomes.IndexModel
-
 @{
     ViewData["Title"] = "Index";
 }
-
 <h1>Incomes</h1>
-
 <p>
     <a class="btn btn-primary" asp-page="Create">Create New</a>
 </p>
-
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Entry</h3>
         <div class="card-tools">
-            <div class="input-group input-group-sm" style="width: 150px;">
-                <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-                <div class="input-group-append">
-                    <button type="submit" class="btn btn-default">
-                        <i class="fas fa-search"></i>
-                    </button>
+            <form method="get">
+                <div class="input-group">
+                    <input type="text" name="searchString" class="form-control" placeholder="Search by description" value="@Model.SearchString">
+                    <input type="date" name="fromDate" class="form-control" value="@Model.FromDate?.ToString("yyyy-MM-dd")">
+                    <input type="date" name="toDate" class="form-control" value="@Model.ToDate?.ToString("yyyy-MM-dd")">
+                    <select name="source" class="form-control">
+                        <option value="">All Sources</option>
+                        @foreach (var source in Model.Sources)
+                        {
+                            <option value="@source" selected="@(source == Model.SelectedSource)">@source</option>
+                        }
+                    </select>
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-default">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
-
     <div class="card-body table-responsive p-0" style="height: 300px;">
         <table class="table table-head-fixed text-nowrap">
             <thead>
@@ -71,6 +77,4 @@
             </tbody>
         </table>
     </div>
-
 </div>
-

@@ -56,6 +56,7 @@ namespace PRN231_FinalProject_Client.Pages.Incomes
             var currentUser = await JsonSerializer.DeserializeAsync<User>(await response.Content.ReadAsStreamAsync(), options);
             Income.UserId = currentUser.UserId;
             currentUser.Balance = currentUser.Balance + Income.Amount;
+            response = await client.PutAsync(ApiUrl + $"/api/Users/{currentUser.UserId}", new StringContent(JsonSerializer.Serialize(currentUser), System.Text.Encoding.UTF8, "application/json"));
             var json = JsonSerializer.Serialize(Income);
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             response = await client.PostAsync(ApiUrl + "/api/Incomes/", content);
