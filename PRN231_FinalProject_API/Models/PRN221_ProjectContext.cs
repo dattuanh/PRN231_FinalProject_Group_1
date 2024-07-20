@@ -243,7 +243,7 @@ namespace PRN231_FinalProject_API.Models
 
                 entity.Property(e => e.Description).HasColumnType("text");
 
-                entity.Property(e => e.ReminderDate).HasColumnType("date");
+                entity.Property(e => e.ReminderDate).HasColumnType("datetime");
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
