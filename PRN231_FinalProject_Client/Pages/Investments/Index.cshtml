@@ -1,0 +1,62 @@
+﻿@page
+@model PRN231_FinalProject_Client.Pages.Investments.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Investment[0].InvestmentType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Investment[0].InvestmentDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Investment[0].Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Investment[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Investment[0].User)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Investment) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.InvestmentType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InvestmentDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.UserId)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.InvestmentId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.InvestmentId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.InvestmentId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+

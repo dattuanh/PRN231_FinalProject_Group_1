@@ -55,7 +55,7 @@ namespace PRN231_FinalProject_API.Controllers
             {
                 return NotFound();
             }
-            var budget = await _context.Budgets.Where(b=>b.UserId==uid).ToListAsync();
+            var budget = await _context.Budgets.Where(b => b.UserId == uid).ToListAsync();
 
             if (budget == null)
             {
@@ -119,10 +119,10 @@ namespace PRN231_FinalProject_API.Controllers
         [HttpPost]
         public async Task<ActionResult<Budget>> PostBudget(Budget budget)
         {
-          if (_context.Budgets == null)
-          {
-              return Problem("Entity set 'PRN221_ProjectContext.Budgets'  is null.");
-          }
+            if (_context.Budgets == null)
+            {
+                return Problem("Entity set 'PRN221_ProjectContext.Budgets'  is null.");
+            }
             _context.Budgets.Add(budget);
             await _context.SaveChangesAsync();
 
@@ -152,6 +152,18 @@ namespace PRN231_FinalProject_API.Controllers
         private bool BudgetExists(int id)
         {
             return (_context.Budgets?.Any(e => e.BudgetId == id)).GetValueOrDefault();
+        }
+
+        [HttpGet("total")]
+        public async Task<ActionResult<decimal>> GetTotalBudget(int id)
+        {
+           
+
+            var totalBudget = await _context.Budgets
+                .Where(b => b.UserId == id)
+                .SumAsync(b => b.TotalBudget);
+
+            return Ok(totalBudget);
         }
     }
 }

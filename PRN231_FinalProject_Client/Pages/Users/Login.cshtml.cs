@@ -78,7 +78,7 @@ namespace PRN231_FinalProject_Client.Pages.Users
                 response = await client.GetAsync("https://localhost:7203/api/Users");
                 strData = await response.Content.ReadAsStringAsync();
                 HttpContext.Session.SetInt32("RemindersCount", reminders.Count);
-                return RedirectToPage("/PaymentReminders/Index");
+                return RedirectToPage("/Index");
             }
             else
             {

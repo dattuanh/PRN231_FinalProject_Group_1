@@ -21,7 +21,7 @@
                         <option value="">All Sources</option>
                         @foreach (var source in Model.Sources)
                         {
-                            <option value="@source" selected="@(source == Model.SelectedSource)">@source</option>
+                            <option value="@source" selected="@(source == Model.SelectedSource ? "selected" : "")">@source</option>
                         }
                     </select>
                     <div class="input-group-append">

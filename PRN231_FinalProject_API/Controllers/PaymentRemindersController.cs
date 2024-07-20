@@ -143,5 +143,20 @@ namespace PRN231_FinalProject_API.Controllers
         {
             return (_context.PaymentReminders?.Any(e => e.ReminderId == id)).GetValueOrDefault();
         }
+
+        [HttpGet("future/{userId}")]
+        public async Task<ActionResult<IEnumerable<PaymentReminder>>> GetFutureRemindersForUser(int userId)
+        {
+            var currentDate = DateTime.Now.Date;
+
+            var futureReminders = await _context.PaymentReminders
+                .Where(pr => pr.UserId == userId &&
+                             pr.ReminderDate.HasValue &&
+                             pr.ReminderDate.Value.Date > currentDate)
+                .OrderBy(pr => pr.ReminderDate)
+                .ToListAsync();
+
+            return Ok(futureReminders);
+        }
     }
 }

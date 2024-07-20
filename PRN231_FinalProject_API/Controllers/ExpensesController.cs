@@ -48,6 +48,7 @@ namespace PRN231_FinalProject_API.Controllers
 
             return expense;
         }
+
         [HttpGet("User/{uid}")]
         public async Task<ActionResult<IEnumerable<Expense>>> GetUserExpense(int uid)
         {
@@ -68,7 +69,7 @@ namespace PRN231_FinalProject_API.Controllers
         // PUT: api/Expenses/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutExpense(int id, Expense expense)
+        public async Task<IActionResult> PutExpense(int id, [FromBody]Expense expense)
         {
             if (id != expense.ExpenseId)
             {
@@ -134,6 +135,44 @@ namespace PRN231_FinalProject_API.Controllers
         private bool ExpenseExists(int id)
         {
             return (_context.Expenses?.Any(e => e.ExpenseId == id)).GetValueOrDefault();
+        }
+
+        [HttpGet("total")]
+        public async Task<ActionResult<decimal>> GetTotalExpense(int id)
+        {
+            
+            
+
+            var totalExpense = await _context.Expenses
+                .Where(e => e.UserId == id)
+                .SumAsync(e => e.Amount);
+
+            return Ok(totalExpense);
+        }
+
+        [HttpGet("recent/{userId}")]
+        public async Task<ActionResult<IEnumerable<Expense>>> GetRecentExpenses(int userId)
+        {
+            var recentExpenses = await _context.Expenses
+                .Where(e => e.UserId == userId)
+                .OrderByDescending(e => e.ExpenseDate)
+                .Take(5)
+                .Select(e => new
+                {
+                    e.ExpenseId,
+                    e.ExpenseDate,
+                    e.Amount,
+                    e.Category,
+                    e.Description
+                })
+                .ToListAsync();
+
+            if (recentExpenses == null || !recentExpenses.Any())
+            {
+                return NotFound("No recent expenses found for this user.");
+            }
+
+            return Ok(recentExpenses);
         }
     }
 }

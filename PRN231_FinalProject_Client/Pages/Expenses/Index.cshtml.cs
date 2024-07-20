@@ -1,44 +1,55 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using PRN231_FinalProject_Client.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-namespace PRN231_FinalProject_Client.Pages.Incomes
+namespace PRN231_FinalProject_Client.Pages.Expenses
 {
     [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Client, NoStore = false)]
     public class IndexModel : PageModel
     {
         private readonly HttpClient client = null;
         private string ApiUrl = "https://localhost:7203";
-
-        public IndexModel()
+        private readonly PRN221_ProjectContext _context;
+        private readonly ILogger<IndexModel> _logger;
+        private readonly IMemoryCache _cache;
+        private readonly string cachingKey = "ExpenseKey";
+        public IndexModel(IMemoryCache cache, ILogger<IndexModel> logger)
         {
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
+            _cache = cache;
+            _logger = logger;
         }
 
-        public IList<Income> Income { get; set; } = default!;
-        public List<string> Sources { get; set; } =  new List<string> { "Salary", "Hourly wage", "Interest income", "Child support", "Others" };
+        public IList<Expense> Expenses { get; set; } = default!;
 
         [BindProperty(SupportsGet = true)]
         public string SearchString { get; set; }
 
-        
+
         private DateTime? fromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
         [BindProperty(SupportsGet = true)]
-        public DateTime? FromDate { 
-            get {return fromDate; }
+        public DateTime? FromDate
+        {
+            get { return fromDate; }
             set
             {
                 fromDate = value;
             }
-            }
+        }
         private DateTime? toDate = DateTime.Now;
         [BindProperty(SupportsGet = true)]
-        public DateTime? ToDate {
+        public DateTime? ToDate
+        {
             get
             {
                 return toDate;
@@ -46,13 +57,10 @@ namespace PRN231_FinalProject_Client.Pages.Incomes
             set
             {
                 toDate = value;
-            } 
+            }
         }
 
-        [BindProperty(SupportsGet = true)]
-        public string SelectedSource { get; set; }
-
-        public async Task OnGetAsync(string source)
+        public async Task OnGetAsync()
         {
             var options = new JsonSerializerOptions
             {
@@ -60,36 +68,28 @@ namespace PRN231_FinalProject_Client.Pages.Incomes
             };
 
             int? id = HttpContext.Session.GetInt32("UserId");
-            var response = await client.GetAsync(ApiUrl + $"/api/Incomes/User/{id}");
+            var response = await client.GetAsync(ApiUrl + $"/api/Expenses/User/{id}");
             string strData = await response.Content.ReadAsStringAsync();
-            var incomes = JsonSerializer.Deserialize<List<Income>>(strData, options);
+            var expense = JsonSerializer.Deserialize<List<Expense>>(strData, options);
 
             // Apply filters
             if (!string.IsNullOrEmpty(SearchString))
             {
-                incomes = incomes.Where(i => i.Description.Contains(SearchString, StringComparison.OrdinalIgnoreCase)).ToList();
+                expense = expense.Where(i => i.Description.Contains(SearchString, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             if (FromDate.HasValue)
             {
-                incomes = incomes.Where(i => i.IncomeDate >= FromDate.Value).ToList();
+                expense = expense.Where(i => i.ExpenseDate >= FromDate.Value).ToList();
             }
-
             if (ToDate.HasValue)
             {
-                incomes = incomes.Where(i => i.IncomeDate <= ToDate.Value).ToList();
+                expense = expense.Where(i => i.ExpenseDate <= ToDate.Value).ToList();
             }
 
-            if (!string.IsNullOrEmpty(source))
-               
-            {
-                SelectedSource = source;
-                incomes = incomes.Where(i => i.Source == source).ToList();
-            }
+            
+            Expenses = expense;
 
-            Income = incomes;
-
-           
         }
     }
 }
