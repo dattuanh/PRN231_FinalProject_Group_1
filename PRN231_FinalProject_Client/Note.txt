@@ -11,3 +11,11 @@
             endPage = Math.Min(totalPages, endPage + deltaStart);
             return Enumerable.Range(firstPage, endPage - firstPage + 1);
         }// comment và trường hợp khác
+
+
+
+
+        số lượng phần tử trong một trang, phân trang, sortOrderbydate,..., search, 
+        mình sẽ tối ưu và responsive cho trang web, các phần nó độc lập với nhau
+
+        mình không responsive => xong mới đến responsive
