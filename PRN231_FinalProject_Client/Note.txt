@@ -4,7 +4,7 @@
             int pagesAfterCurrentPage = pageRange - pagesBeforeCurrentPage - 1;
             int firstPage = Math.Max(1, currentPage - pagesBeforeCurrentPage);
             int endPage = Math.Min(totalPages, currentPage + pagesAfterCurrentPage);
-            // calculate delta: nó là độ chênh lệch, đáng lẽ deltastart và end phải bằng không nhưng do dùng max với min
+            // calculate delta: nó là độ chênh lệch của pagesBeforeCurrentPage,pagesAfterCurrentPage so với currentPage và firstPage,endpage , đáng lẽ deltastart và end phải bằng không nhưng do dùng max với min
             int deltaStart = pagesBeforeCurrentPage - (currentPage - firstPage);
             int deltaEnd = pagesAfterCurrentPage - (endPage - currentPage);
             firstPage = Math.Max(1, firstPage - deltaEnd);
@@ -12,7 +12,7 @@
             return Enumerable.Range(firstPage, endPage - firstPage + 1);
         }// comment và trường hợp khác
 
-
+         
 
 
         số lượng phần tử trong một trang, phân trang, sortOrderbydate,..., search, 

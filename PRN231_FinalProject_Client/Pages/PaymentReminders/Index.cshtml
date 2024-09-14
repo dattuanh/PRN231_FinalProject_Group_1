@@ -135,9 +135,9 @@
     </div>
 </div>
 
-@* <div id="htmlContainer">
+<div id="htmlContainer">
     <input type="submit" value="Check" onclick="Paging()" />
-</div> *@
+</div>
 <script>
     function Paging() {
         $.ajax({
@@ -145,6 +145,7 @@
             type: 'GET',
             success: function (data) {
                 // Assuming you have a div with the ID 'htmlContainer' where you want to display the HTML
+                console.log(data);
                 $('#htmlContainer').html(data);
             },
             error: function (error) {
