@@ -15,8 +15,18 @@ namespace PRN231_FinalProject_Client.Pages.PaymentReminders
         public string reminderSortOrder { get; set; } = "ReminderDate";
         [BindProperty]
         public string reminderSortOrderBy { get; set; } = "Asc";
+
+        [BindProperty]
+        public string SearchAll { get; set; } = default!;
         [BindProperty]
         public string reminderSearch { get; set; } = default!;
+        [BindProperty]
+        public string DueIn24search { get; set; } = default!;
+        public async Task<List<PaymentReminder>> SearchReminderBySearchInput(List<PaymentReminder> data, string searchInput)
+        {
+            searchInput = searchInput.Trim().ToLower();
+            return data.Where(x => x.Description.Trim().ToLower().Contains(searchInput) || x.ReminderDate.ToString().Trim().ToLower().Contains(searchInput)).ToList();
+        }
         public IndexModel()
         {
             client = new HttpClient();
@@ -43,11 +53,70 @@ namespace PRN231_FinalProject_Client.Pages.PaymentReminders
         public async Task OnpostAsync()
         {
             await GetData();
-            if (!string.IsNullOrEmpty(reminderSearch))
+            string SearchAllButton = Request.Form["SearchAllButton"];
+            string reminderSearchButton = Request.Form["reminderSearchButton"];
+            string DueIn24searchButton = Request.Form["DueIn24searchButton"];
+            // phân tích và chọn ra thứ tự ưu tiên(thứ tự trước sau) sao cho phù hợp với signalR 
+            if (SearchAllButton != null)
             {
+                if (!string.IsNullOrEmpty(SearchAll))
+                {
+
+                    PaymentRemindersList = await SearchReminderBySearchInput(PaymentRemindersList, SearchAll);
+                    PaymentRemindersDueIn24List = await SearchReminderBySearchInput(PaymentRemindersDueIn24List, SearchAll);
+                    HttpContext.Session.SetString("SearchAll", SearchAll);
+                }
+                HttpContext.Session.Remove("reminderSearch");
+                HttpContext.Session.Remove("DueIn24search");
+            }
+            else if (reminderSearchButton != null)
+            {
+                if (!string.IsNullOrEmpty(reminderSearch))
+                {
+                    PaymentRemindersList = await SearchReminderBySearchInput(PaymentRemindersList, reminderSearch);
+                    HttpContext.Session.SetString("reminderSearch", reminderSearch);
+                }
+                else
+                {
+                    HttpContext.Session.Remove("reminderSearch");
+                }
+                DueIn24search = HttpContext.Session.GetString("DueIn24search");
+                if (!string.IsNullOrEmpty(DueIn24search))
+                {
+                    PaymentRemindersDueIn24List = await SearchReminderBySearchInput(PaymentRemindersDueIn24List, DueIn24search);
+                }
+                else if (!string.IsNullOrEmpty(SearchAll))
+                {
+                    SearchAll = HttpContext.Session.GetString("SearchAll");
+                    PaymentRemindersDueIn24List = await SearchReminderBySearchInput(PaymentRemindersDueIn24List, SearchAll);
+                }
 
             }
-            //PaymentRemindersList = PaymentRemindersList.Where(x => x.ReminderName.Contains(reminderSearch)).ToList();
+            else if (DueIn24searchButton != null)
+            {
+
+                if (!string.IsNullOrEmpty(DueIn24search))
+                {
+                    PaymentRemindersDueIn24List = await SearchReminderBySearchInput(PaymentRemindersDueIn24List, DueIn24search);
+                    HttpContext.Session.SetString("DueIn24search", DueIn24search);
+                }
+                else
+                {
+                    HttpContext.Session.Remove("DueIn24search");
+                }
+                reminderSearch = HttpContext.Session.GetString("reminderSearch");
+                if (!string.IsNullOrEmpty(reminderSearch))
+                {
+                    PaymentRemindersList = await SearchReminderBySearchInput(PaymentRemindersList, reminderSearch);
+                }
+                else if (!string.IsNullOrEmpty(SearchAll))
+                {
+                    SearchAll = HttpContext.Session.GetString("SearchAll");
+                    PaymentRemindersList = await SearchReminderBySearchInput(PaymentRemindersList, SearchAll);
+                }
+
+            }
+
         }
         public async Task OnGet()
         {

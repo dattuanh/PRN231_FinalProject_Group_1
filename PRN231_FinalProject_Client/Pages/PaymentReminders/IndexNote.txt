@@ -1,0 +1,15 @@
+﻿1 thực hiện trước đó
+2 thực hiện hiện tại 
+3 search theo cái 1
+
+1 thực hiện trước đó(bậc 1)
+2 thực hiện hiện tại(cái 3 search theo cái 3)
+3 thực hiện trước đó(bậc 2)
+
+
+
+1 thực hiện trước đó(bậc 2)
+2 thực hiện hiện tại(cái 3 search theo cái 1)
+3 thực hiện trước đó(bậc 1)
+
+=> trong lúc làm mình mới define thêm được các yếu tố mới cần thiết để hoàn thiện bài toán!

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using PRN231_FinalProject_API.Models;
 
 namespace PRN231_FinalProject_API.Controllers
@@ -33,10 +34,17 @@ namespace PRN231_FinalProject_API.Controllers
         [HttpGet("{userId}")]
         public async Task<ActionResult<IEnumerable<PaymentReminder>>> GetPaymentRemindersByTimeAndUserId([FromQuery] DateTime today, [FromQuery] DateTime endOfDate, int userId)
         {
-            var paymentReminders = await _context.PaymentReminders
+            // cái này nó bị ngu nè
+            //var paymentReminders = await _context.PaymentReminders
+            //        //.Include(p => p.User)
+            //        .Where(p => p.ReminderDate >= today && p.ReminderDate <= endOfDate && userId == 2)
+            //        .ToListAsync();
+
+            var paymentReminders = _context.PaymentReminders
                 .Include(p => p.User)
-                .Where(p => p.ReminderDate >= today && p.ReminderDate <= endOfDate && p.UserId == userId)
-                .ToListAsync();
+                .AsEnumerable()
+                .Where(p => p.ReminderDate >= today && p.ReminderDate <= endOfDate && userId == 2)
+                .ToList();
             if (paymentReminders == null)
             {
                 return NotFound();
@@ -50,7 +58,7 @@ namespace PRN231_FinalProject_API.Controllers
             {
                 return NotFound();
             }
-            var paymentReminders = await _context.PaymentReminders.Where(p=>p.UserId== userId).ToListAsync();
+            var paymentReminders = await _context.PaymentReminders.Where(p => p.UserId == userId).ToListAsync();
 
             return paymentReminders;
         }
